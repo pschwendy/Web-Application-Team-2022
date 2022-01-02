@@ -1,0 +1,12 @@
+.head-hero{
+    position: relative;
+    user-select: none;
+}
+.hero {
+    object-fit: cover;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    font-size: 1.2em; 
+    background-color: lightsalmon;
+}
