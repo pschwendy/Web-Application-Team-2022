@@ -1,0 +1,16 @@
+
+#parallaxAttractionsBackground{
+        /* The image used */
+    background-image: url("/public/images/placeholder-parallax.jpg");
+
+    /* Set a specific height */
+    min-height: 500px;
+
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    background-color: rgba(0, 0, 0, 0.2) !important;
+}

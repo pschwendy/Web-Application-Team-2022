@@ -8,21 +8,60 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="/public/theme.css">
-    <title>Hello, world!</title>
+    <title>Attractions</title>
   </head>
-  <body>
+  <body id="parallaxAttractionsBackground">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script type="module" src="/public/components/AttractionCard.js"></script>
     <script type="module" src="/public/components/NavBar.js"></script>
 
     <nav-bar></nav-bar>
 
-    <attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
-     description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA TURN AROUND, AND DESERT YOU.">
-    </attraction-card>
-    <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
-     description="Sus. SUS. SUS!!! I knew it was Red.">
-    </attraction-card>
+    <div class="container" style="width: 80%; margin: auto; text-align: center;">
+        <div class="row">
+            <div class="col gy-5">
+                <h1>Attractions</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="width: 80%; margin: auto;">
+        <div class="row">
+            <div class="col gy-5">
+                <attraction-card link="/checkout?item=Rick's Roll" title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
+                description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA TURN AROUND, AND DESERT YOU.">
+               </attraction-card>
+               <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
+                description="Sus. SUS. SUS!!! I knew it was Red.">
+                </attraction-card>
+            </div>
+            <div class="col gy-5">
+                <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
+                description="Sus. SUS. SUS!!! I knew it was Red.">
+                </attraction-card>
+                <attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
+                description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA TURN AROUND, AND DESERT YOU.">
+               </attraction-card>
+               <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
+                description="Sus. SUS. SUS!!! I knew it was Red.">
+                </attraction-card>
+            </div>
+            <div class="col gy-5">
+                <attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
+                description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA TURN AROUND, AND DESERT YOU.">
+               </attraction-card>
+               <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
+                description="Sus. SUS. SUS!!! I knew it was Red.">
+                </attraction-card>
+                <attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
+                description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA TURN AROUND, AND DESERT YOU.">
+               </attraction-card>
+            </div>
+        </div>
+        
+    </div>
+   
+    
     
   </body>
 </html>

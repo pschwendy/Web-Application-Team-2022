@@ -13,6 +13,10 @@ app.get("/attractions", function(req, res){
     res.sendFile(__dirname + "/attractions.html");
 });
 
+app.get("/checkout", function(req, res){
+    res.sendFile(__dirname + "/checkout.html");
+});
+
 app.listen(process.env.PORT_NUM, function(){
     console.log("Listening on port: " + process.env.PORT_NUM);
 });

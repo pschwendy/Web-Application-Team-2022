@@ -8,9 +8,8 @@ define({
   img: "/images/placeholder.png",
   alt: "Random image",
   render: render(function(host, title, description, link, img, alt){
-    console.log(host.img);
     return html`
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 18rem; margin-top: 20px;">
     <img src=${host.img} class="card-img-top" alt=${host.alt}>
     <div class="card-body">
       <h5 class="card-title">${host.title}</h5>
