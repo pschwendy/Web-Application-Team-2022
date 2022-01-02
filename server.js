@@ -9,6 +9,10 @@ app.get("/", function(req, res){
     res.sendFile(__dirname + "/index.html");
 });
 
+app.get("/attractions", function(req, res){
+    res.sendFile(__dirname + "/attractions.html");
+});
+
 app.listen(process.env.PORT_NUM, function(){
     console.log("Listening on port: " + process.env.PORT_NUM);
 });
