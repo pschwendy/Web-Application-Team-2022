@@ -1,0 +1,44 @@
+#p-nav {
+    height: 76px;
+}
+
+.navbar-brand::after{
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 2px;
+    left: 50%;
+    position: absolute;
+    background: #fff;
+    transition: width 0.25s ease 0s, left 0.25s ease 0s;
+    width: 0;
+}
+.navbar-brand:hover::after { 
+  width: 100%; 
+  left: 0; 
+}
+
+.modal-form {
+    width: 100%; 
+    margin-bottom: 10px;
+}
+  span.icon {
+    background: url('./btn_google_light_normal_ios.svg') transparent 5px 50% no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+    width: 42px;
+    height: 42px;
+    left: 5%;
+  }
+
+@media only screen and (min-width : 992px) {
+    .navbar-brand{
+        text-align: center;
+    }
+    .brand {
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
+    }
+}
