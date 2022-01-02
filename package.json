@@ -1,0 +1,30 @@
+{
+  "name": "web-application-team-2022",
+  "version": "1.0.0",
+  "description": "Our 2021-22 Web App Team project",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YnotCode/Web-Application-Team-2022.git"
+  },
+  "keywords": [
+    "2021-22",
+    "Web",
+    "App",
+    "BPA"
+  ],
+  "author": "Anthony Varkey, Peter Schwendeman, Aarnav Unadkat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YnotCode/Web-Application-Team-2022/issues"
+  },
+  "homepage": "https://github.com/YnotCode/Web-Application-Team-2022#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2"
+  }
+}
