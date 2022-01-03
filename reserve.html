@@ -26,12 +26,12 @@
             </div>
             <div class="mb-3">
               <label for="date" class="form-label">Date:</label>
-              <input type="date" class="form-control" id="date">
+              <input required type="date" class="form-control" id="date">
             </div>
             <label for="time-group">Time:</label>
             <div id="time-group">
                 <div class="mb-3 form-check">
-                    <input class="form-check-input" type="radio" name="time-options" id="time-1"/>
+                    <input checked required class="form-check-input" type="radio" name="time-options" id="time-1"/>
                     <label class="form-check-label" for="time-1">3:00 p.m. - 5:00 p.m.</label>
                 </div>
                 <div class="mb-3 form-check">
@@ -45,36 +45,44 @@
             </div>
             <div class="mb-3">
               <label for="room-select">Room:</label>
-              <select id="room-select" name="room" class="form-select mb-3" aria-label=".form-select-lg example">
+              <select onchange="checkReadyStatus()" required id="room-select" name="room" class="form-select mb-3" aria-label=".form-select-lg example">
                 <option value="dining1">Dining Room 1</option>
                 <option value="dining2">Dining Room 2</option>
                 <option value="theater">Theater</option>
                 <option value="vip">VIP Room</option>
               </select>              
             </div>
-            <div class="mb-3">
-              <label for="attraction-name" class="form-label">Seats</label>
-              <input disabled type="text" class="form-control" id="attraction-name" aria-describedby="emailHelp">
-              <t class="text-warning">Select a date, time window, and room to see seat availability</t>
+            <div class="mb-3" id="seatSelection">
+              <label for="attraction-name-ui" class="form-label">Seats</label>
+              <!--<seating-diagram></seating-diagram>-->
+              <div id="diagramHolder"></div>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
+              <script src="/public/SeatingRenderer.js"></script>
             </div>
             <div class="mb-3">
-              <label for="ticket-count" class="form-label">Number of Tickets:</label>
-              <input type="number" class="form-control" id="ticket-count">
+              <t style="color: #218380; margin-right: 20px;">Seat Available</t>
+              <t style="color: #D81159; margin-right: 20px;">Seat Taken</t>
+              <t style="color: #BB9457;">Building Layout</t>
             </div>
-
-            
-
-            <!--Time selection-->
             
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
     </div>
-    
+
     <script>
-        window.onload = function(){
-            const searchParams = new URLSearchParams(window.location.search);
-            document.getElementById("attraction-name").value = searchParams.get("item");
-        }
+      
+      function getTodaysDate(){
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        return yyyy + "-" + mm + "-" + dd;
+      }
+
+      //set the date input to today's date on page load
+      window.onload = function(){
+        document.getElementById("date").value = getTodaysDate();
+      }
     </script>
 
 
