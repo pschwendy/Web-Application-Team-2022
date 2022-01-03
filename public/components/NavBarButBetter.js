@@ -15,7 +15,7 @@ define({
                         <a class="nav-link" href="/reserve">Reserve a Table</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/tickets">Buy Tickets</a>
+                        <a class="nav-link" href="/attractions">Buy Tickets</a>
                     </li>
                 </ul>
                 <span id="account" class="float-right">

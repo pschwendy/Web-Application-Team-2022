@@ -14,3 +14,11 @@
 
     background-color: rgba(0, 0, 0, 0.2) !important;
 }
+
+#reserveBackground{
+    background-image: url("/public/images/derp3.jpg");
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}

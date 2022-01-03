@@ -17,6 +17,10 @@ app.get("/checkout", function(req, res){
     res.sendFile(__dirname + "/checkout.html");
 });
 
+app.get("/reserve", function(req, res){
+    res.sendFile(__dirname + "/reserve.html");
+});
+
 app.listen(process.env.PORT_NUM, function(){
     console.log("Listening on port: " + process.env.PORT_NUM);
 });
