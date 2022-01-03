@@ -45,23 +45,28 @@
             </div>
             <div class="mb-3">
               <label for="room-select">Room:</label>
-              <select onchange="checkReadyStatus()" required id="room-select" name="room" class="form-select mb-3" aria-label=".form-select-lg example">
-                <option value="dining1">Dining Room 1</option>
-                <option value="dining2">Dining Room 2</option>
-                <option value="theater">Theater</option>
-                <option value="vip">VIP Room</option>
+              <select onchange="changeDiagram(this)" required id="room-select" name="room" class="form-select mb-3" aria-label=".form-select-lg example">
+                <option value="Dining Room 1">Dining Room 1</option>
+                <option value="Dining Room 2">Dining Room 2</option>
+                <option value="Theater">Theater</option>
+                <option value="VIP Room">VIP Room</option>
               </select>              
             </div>
             <div class="mb-3" id="seatSelection">
               <label for="attraction-name-ui" class="form-label">Seats</label>
-              <!--<seating-diagram></seating-diagram>-->
+
+              <!--Diagram to show Seats-->
               <div id="diagramHolder"></div>
               <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
               <script src="/public/SeatingRenderer.js"></script>
+
+              
             </div>
-            <div class="mb-3">
-              <t style="color: #218380; margin-right: 20px;">Seat Available</t>
-              <t style="color: #D81159; margin-right: 20px;">Seat Taken</t>
+            <!--Labels for the diagram-->
+            <div class="mb-3" style="display: flex;">
+              <t style="color: #218380; margin-right: 20px;">Seat</t>
+              <t style="color: #061826; margin-right: 20px;">Seat Unavailable</t>
+              <t style="color: #05299E; margin-right: 20px;">Seat Selected</t>
               <t style="color: #BB9457;">Building Layout</t>
             </div>
             
@@ -71,6 +76,7 @@
 
     <script>
       
+      //gets todays date in a format that can be used for the value of the date input
       function getTodaysDate(){
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');
@@ -82,6 +88,14 @@
       //set the date input to today's date on page load
       window.onload = function(){
         document.getElementById("date").value = getTodaysDate();
+        let diagram = new SeatingDiagram();
+        diagram.render("Dining Room 1");
+      }
+
+      //switches the diagram based on the selected room using SeatDiagram object
+      function changeDiagram(el){
+        let diagram = new SeatingDiagram();
+        diagram.render(el.value);
       }
     </script>
 

@@ -1,5 +1,6 @@
+console.log("SeatingRenderer is a go");
 //initialize PIXIJS 
-PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+//PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 var app = new PIXI.Application({
   forceCanvas: true,
   backgroundColor: 0xD5DFE5
@@ -7,7 +8,7 @@ var app = new PIXI.Application({
 
 //set size to 400 x 400 pixels
 app.renderer.autoResize = true;
-app.renderer.resize(400, 400);
+app.renderer.resize(300, 400);
 
 //add it to the holding element
 var display = document.getElementById("diagramHolder");
@@ -15,19 +16,33 @@ display.appendChild(app.view);
 
 //function to create a Sprite representing a given seat
 //returns a PIXI.Sprite that fits the provided parameters
-function createSeat(x, y, taken){
+function createSeat(x, y, gone=false){
     var seat = PIXI.Sprite.from(PIXI.Texture.WHITE);
+    if (!gone){
+        seat.interactive = true;
+    }
+    seat.on("click", function(){
+        console.log("HI");
+        seat.taken = !seat.taken;
+        if (!seat.taken){
+            seat.tint = 0x218380;
+        }
+        else{
+            seat.tint = 0x05299E;
+        }
+    })
     seat.width = 25;
     seat.height = 25;
-    if (!taken){
+    if (!gone){
         seat.tint = 0x218380;
     }
     else{
-        seat.tint = 0xD81159;
+        seat.tint = 0x061826;
     }
     seat.x = x;
     seat.y = y;
-    seat.taken = taken;
+    seat.taken = false;
+    seat.isSeat = true;
     return seat;
 }
 
@@ -35,6 +50,7 @@ function createSeat(x, y, taken){
 //returns a PIXI.Sprite that fits the provided parameters
 function createBuildingPiece(x, y, width, height){
     var piece = PIXI.Sprite.from(PIXI.Texture.WHITE);
+    piece.isSeat = false;
     piece.width = width;
     piece.height = height;
     piece.tint = 0xBB9457;
@@ -73,12 +89,109 @@ class Layout{
 
 var theater = new Layout([
     createBuildingPiece(10, 10, 380, 20),
-    createSeat(10, 50, false),
-    createSeat(50, 50, false),
-    createSeat(90, 50, false)
+    createSeat(10, 50),
+    createSeat(50, 50),
+    createSeat(90, 50)
 ]);
 
-theater.render(app.stage);
-theater.takeSeat(1);
-theater.takeSeat(1);
-theater.takeSeat(2);
+var diningRoom1 = new Layout([
+    createSeat(10, 50),
+    createSeat(10, 90, true),
+    createSeat(10, 130),
+    createBuildingPiece(60, 20, 20, 180),
+    createSeat(100, 50),
+    createSeat(100, 90),
+    createSeat(100, 130),
+    createSeat(160, 200),
+    createSeat(160, 240),
+    createSeat(160, 280),
+    createBuildingPiece(210, 170, 20, 180),
+    createSeat(250, 200),
+    createSeat(250, 240),
+    createSeat(250, 280)
+]);
+
+var diningRoom2 =  new Layout([
+    createSeat(10, 50),
+    createSeat(10, 90),
+    createSeat(10, 130),
+    createBuildingPiece(60, 20, 20, 180),
+    createSeat(100, 50),
+    createSeat(100, 90),
+    createSeat(100, 130),
+]);
+
+var vipRoom = new Layout([
+    createSeat(10, 50),
+    createSeat(50, 50),
+    createSeat(90, 50),
+    createSeat(10, 200),
+    createSeat(50, 200),
+    createSeat(90, 200)
+])
+
+
+class SeatingDiagram{
+    constructor(){
+        this.rooms =  new Map();
+        this.rooms.set("Theater", theater);
+        this.rooms.set("Dining Room 1", diningRoom1);
+        this.rooms.set("Dining Room 2", diningRoom2);
+        this.rooms.set("VIP Room", vipRoom);
+    }
+
+    render(name){
+        //remove all existing pieces
+        for (var i = app.stage.children.length - 1; i >= 0; i--){
+            app.stage.removeChild(app.stage.children[i]);
+        }
+        //render the layout
+        this.rooms.get(name).render(app.stage);
+    }
+
+    makeEditable(name){
+        var room = this.rooms.get(name);
+        for (var obj of room.objects){
+            if (obj.isSeat){
+                obj.taken = false;
+                obj.tint = 0x218380;
+            }
+            obj.interactive = true;
+            obj.on("mousedown", onDragStart);
+            obj.on("mousemove", onDragMove);
+            obj.on("mouseup", onDragEnd);
+        }
+    }
+}
+
+
+
+
+function onDragStart(event)
+{
+    // store a reference to the data
+    // the reason for this is because of multitouch
+    // we want to track the movement of this particular touch
+    this.data = event.data;
+    this.alpha = 0.5;
+    this.dragging = true;
+}
+
+function onDragEnd()
+{
+    this.alpha = 1;
+
+    this.dragging = false;
+    this.data = null;
+    obj.tint = 0x218380;
+}
+
+function onDragMove()
+{
+    if (this.dragging)
+    {
+        var newPosition = this.data.getLocalPosition(this.parent);
+        this.position.x = newPosition.x;
+        this.position.y = newPosition.y;
+    }
+}
