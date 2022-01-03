@@ -11,8 +11,8 @@ app.use("/public", express.static("./public"));
 
 
 //sets an app.get for the given urlPath to the file at filepath
-//if filepath not given it defaults to the name of the url + .html for a page
-function mapPath(urlPath, filepath=(urlPath + ".html")){
+//if filepath not given it defaults to the name of the url + .html in the pages folder
+function mapPath(urlPath, filepath=("/pages/" + urlPath + ".html")){
     app.get(urlPath, function(req, res){
         res.sendFile(__dirname + filepath);
     });
@@ -20,7 +20,7 @@ function mapPath(urlPath, filepath=(urlPath + ".html")){
 
 
 //map paths to the respective files to be served
-mapPath("/editRoom", "/roomEditor.html");
+mapPath("/editRoom", "/pages/roomEditor.html");
 mapPath("/checkout");
 mapPath("/attractions");
 mapPath("/", "/index.html");
