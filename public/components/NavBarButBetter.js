@@ -19,7 +19,7 @@ define({
                     </li>
                 </ul>
                 <span id="account" class="float-right">
-                    <button class="nav-item btn btn-primary mr-2">Log In</button>
+                    <a href="/login" class="nav-item btn btn-primary mr-2">Log In</a>
                 </span>
             </div>
         </nav>
