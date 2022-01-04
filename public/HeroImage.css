@@ -1,7 +1,44 @@
 .head-hero{
     position: relative;
     user-select: none;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    align-content: center;
+    align-items: center;
+    height: 100vh;
+    z-index: -1000;
 }
+
+.hero-holder {
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: auto;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: fixed;
+    align-content: center;
+    align-items: center;
+    max-width: 100vw;
+    height: 100vh;
+}
+
+.hero-text {
+    position: fixed;
+    width: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    will-change: opacity; 
+    opacity: 1;
+    user-select: none;
+}
+
 .hero {
     object-fit: cover;
     top: 0;
@@ -9,4 +46,6 @@
     height: 100vh;
     font-size: 1.2em; 
     background-color: lightsalmon;
+    filter: brightness(50%);
+    z-index: -1000;
 }

@@ -6,7 +6,7 @@ define({
     return html`
         <nav id="p-nav" class="header-top topnav fixed-top navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand brand" id="brand" href="/">Touch of Class Events</a>
-            <button class="navbar-toggler float-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler float-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -19,7 +19,7 @@ define({
                     </li>
                 </ul>
                 <span id="account" class="float-right">
-                    <button class="nav-item btn btn-primary mr-2">Sign Up</button>
+                    <button class="nav-item btn btn-primary mr-2">Log In</button>
                 </span>
             </div>
         </nav>
