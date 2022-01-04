@@ -1,0 +1,89 @@
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link rel="stylesheet" href="/public/theme.css">
+        <title>Reserve</title>
+        <link rel="stylesheet" href="/public/Nav.css">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+      </head>
+    <body>
+      <script type="module" src="/public/components/NavBar.js"></script>
+      <nav-bar></nav-bar>
+        <div class="container border bg-light" style="padding: 15px; border-radius: 10px; margin-top: 10vh;">
+            <form>
+                <div class="mb-3">
+                    <h1>Create New Room</h1>
+                </div>
+                <div class="mb-3">
+                  <label for="room-select">Room Name:</label>
+                  <input type="text" id="room-name"/>         
+                </div>
+                <div style="display: flex; flex-wrap: wrap;">
+                  <div style="padding: 20px;">
+                    <div class="mb-3" id="seatSelection">
+                      <label for="attraction-name-ui" class="form-label">Layout (Drag around parts to rearrange)</label>
+        
+                      
+                      <!--Diagram to show Seats-->
+                      <div id="diagramHolder"></div>
+                      <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
+                      <script src="/public/SeatingRenderer.js"></script>
+        
+                      
+                    </div>
+                    <!--Labels for the diagram-->
+                    <div class="mb-3" style="display: flex;">
+                      <t style="color: #218380; margin-right: 20px;">Seat</t>
+                      <t style="color: #BB9457;">Building Layout</t>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="container border" style="padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                      <button type="button" onclick="createItem(false)" class="btn btn-primary">Add seat</button>
+                    </div>
+                    <div class="container border" style="padding: 10px; border-radius: 10px;">
+                      <label>Width:</label>
+                      <input id="width" type="number" value="10"/>
+                      <label>Height:</label>
+                      <input id="height" type="number" value="10"/>
+                      <br>
+                      <br>
+                      <button type="button" onclick="createItem(true)" class="btn btn-primary">Add building piece</button>
+                    </div>
+                  </div>
+                </div>
+                
+                
+                <button style="margin-top: 20px; "type="submit" class="btn btn-primary">Save</button>
+              </form>
+        </div>
+    
+        <script>
+            var diagram = new SeatingDiagram();
+            //sets the default diagram 
+            window.onload = function(){
+                diagram.render("");
+                diagram.makeEditable("");
+            }
+
+            function createItem(piece=false){
+              console.log("creating item");
+              var w = document.getElementById("width").value;
+              var h = document.getElementById("height").value;
+              diagram.addItem("", {
+                "isSeat": !piece, 
+                "width": w, 
+                "height": h,
+              });
+            }
+
+        </script>
+
+    </body>
+
+</html>

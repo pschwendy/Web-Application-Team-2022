@@ -138,6 +138,7 @@ class SeatingDiagram{
         this.rooms.set("Dining Room 1", diningRoom1);
         this.rooms.set("Dining Room 2", diningRoom2);
         this.rooms.set("VIP Room", vipRoom);
+        this.rooms.set("", new Layout([]));
     }
 
     render(name){
