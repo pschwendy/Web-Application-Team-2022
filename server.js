@@ -26,6 +26,7 @@ mapPath("/attractions");
 mapPath("/", "/index.html");
 mapPath("/reserve");
 mapPath("/pixi", "/node_modules/pixi.js/dist/browser/pixi.js");
+mapPath("/createRoom", "/pages/roomCreator.html");
 
 
 //listen on the port dictated by the .env file
