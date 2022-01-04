@@ -1,6 +1,6 @@
 console.log("SeatingRenderer is a go");
 //initialize PIXIJS 
-//PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 var app = new PIXI.Application({
   forceCanvas: true,
   backgroundColor: 0xD5DFE5
@@ -88,7 +88,7 @@ class Layout{
 }
 
 var theater = new Layout([
-    createBuildingPiece(10, 10, 380, 20),
+    createBuildingPiece(10, 10, 280, 20),
     createSeat(10, 50),
     createSeat(50, 50),
     createSeat(90, 50)
@@ -161,6 +161,31 @@ class SeatingDiagram{
             obj.on("mousemove", onDragMove);
             obj.on("mouseup", onDragEnd);
         }
+    }
+
+    addItem(room_name, data){
+        console.log("Added");
+        var room = this.rooms.get(room_name);
+        if (data.isSeat){
+            var newSeat = createSeat(0, 0);
+            newSeat.interactive = true;
+            newSeat.taken = false;
+            newSeat.tint = 0x218380;
+            newSeat.on("mousedown", onDragStart);
+            newSeat.on("mousemove", onDragMove);
+            newSeat.on("mouseup", onDragEnd);
+            room.objects.push(newSeat);
+        }
+        else{
+            var newPiece = createBuildingPiece(0, 0, data.width, data.height);
+            newPiece.interactive = true;
+            newPiece.on("mousedown", onDragStart);
+            newPiece.on("mousemove", onDragMove);
+            newPiece.on("mouseup", onDragEnd);
+            room.objects.push(newPiece);
+            room.objects.push();
+        }
+        this.render(room_name);
     }
 }
 

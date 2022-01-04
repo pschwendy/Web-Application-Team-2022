@@ -49,16 +49,16 @@
                   </div>
                   <div>
                     <div class="container border" style="padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-                      <button class="btn btn-primary">Add seat</button>
+                      <button type="button" onclick="createItem(false)" class="btn btn-primary">Add seat</button>
                     </div>
                     <div class="container border" style="padding: 10px; border-radius: 10px;">
                       <label>Width:</label>
-                      <input type="number"/>
+                      <input id="width" type="number" value="10"/>
                       <label>Height:</label>
-                      <input type="number"/>
+                      <input id="height" type="number" value="10"/>
                       <br>
                       <br>
-                      <button class="btn btn-primary">Add building piece</button>
+                      <button type="button" onclick="createItem(true)" class="btn btn-primary">Add building piece</button>
                     </div>
                   </div>
                 </div>
@@ -69,9 +69,9 @@
         </div>
     
         <script>
+            var diagram = new SeatingDiagram();
             //sets the default diagram 
             window.onload = function(){
-                let diagram = new SeatingDiagram();
                 diagram.render("Dining Room 1");
                 diagram.makeEditable("Dining Room 1");
             }
@@ -79,10 +79,23 @@
             //switches the diagram based on the selected room using SeatDiagram object
             //keeps the diagram editable as well
             function changeDiagram(el){
-                let diagram = new SeatingDiagram();
-                diagram.render(el.value);
-                diagram.makeEditable(el.value);
+              diagram.render(el.value);
+              diagram.makeEditable(el.value);
             }
+
+
+            function createItem(piece=false){
+              console.log("creating item");
+              let el = document.getElementById("room-select");
+              var w = document.getElementById("width").value;
+              var h = document.getElementById("height").value;
+              diagram.addItem(el.value, {
+                "isSeat": !piece, 
+                "width": w, 
+                "height": h,
+              });
+            }
+
         </script>
 
     </body>
