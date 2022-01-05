@@ -72,9 +72,10 @@
                     </div>
                   </div>
                 </div>
-                
+                </div>
                 
                 <button style="margin-top: 20px; "type="submit" class="btn btn-primary">Save</button>
+               
               </form>
         </div>
     
@@ -107,14 +108,5 @@
             }
 
         </script>
-
-          //switches the diagram based on the selected room using SeatDiagram object
-          //keeps the diagram editable as well
-          function changeDiagram(el){
-              let diagram = new SeatingDiagram();
-              diagram.render(el.value);
-              diagram.makeEditable(el.value);
-          }
-      </script>
     </body>
 </html>
