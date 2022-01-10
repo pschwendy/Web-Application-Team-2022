@@ -16,6 +16,29 @@ const client = new OAuth2Client("");
 //serve static files located in the public folder
 app.use("/public", express.static("./public"));
 
+//cookie parser middleware
+var cookieParser = require("cookie-parser");
+
+//SAMPLE CODE FROM NODE POSTGRES THING
+const { Client } = require('pg');
+const queries = require("./queries");
+const client2 = new Client()
+client2.connect();
+var querier = new queries(client2);
+querier.getRoomID("Awesome!", function(id){
+  querier.deleteRoom(id, function(){
+    querier.getRooms(function(rooms){
+      console.log("*********");
+      for (room of rooms){
+        console.log("ROOM: ");
+        console.log(room['pk']);
+        console.log(room['name']);
+        console.log("*********");
+      }
+    });
+  });
+});
+
 
 //sets an app.get for the given urlPath to the file at filepath
 //if filepath not given it defaults to the name of the url + .html in the pages folder
@@ -105,6 +128,12 @@ app.get("/gsignin/:token", function(req, res){
     // const domain = payload['hd'];
   }
   verify().catch(console.error);
+});
+
+
+//handle request to get room data
+app.get("/getRoomData", function(req, res){
+
 });
 
 
