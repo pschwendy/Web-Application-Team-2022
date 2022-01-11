@@ -132,12 +132,33 @@ var vipRoom = new Layout([
 
 
 class SeatingDiagram{
-    constructor(){
+
+    makeLayout(roomData){
+        let arr = [];
+        for (var piece of roomData){
+            if (piece.isSeat){
+                arr.push(createSeat(piece.x, piece.y, pice.available));
+            }
+            else{
+                arr.push(createBuildingPiece(piece.x, piece.y, piece.width, piece.height));
+            }
+        }
+        return new Layout(arr);
+    }
+
+    constructor(rooms){
         this.rooms =  new Map();
+        /*
         this.rooms.set("Theater", theater);
         this.rooms.set("Dining Room 1", diningRoom1);
         this.rooms.set("Dining Room 2", diningRoom2);
         this.rooms.set("VIP Room", vipRoom);
+        */
+
+        for (room of rooms){
+            let key = Object.keys(room)[0]
+            this.rooms.set(key, this.makeLayout(room[key]));
+        }
         this.rooms.set("", new Layout([]));
     }
 

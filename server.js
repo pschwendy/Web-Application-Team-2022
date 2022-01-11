@@ -47,7 +47,6 @@ var data = [
 ]
 
 
-
 /*
 querier.getRoomID("TEST", function(id){
   querier.deleteRoom(id, function(){
