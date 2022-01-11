@@ -23,13 +23,13 @@ class queries {
         this.client = pg_instance;
     }
 
-    createRoom(name){
+    createRoom(name, callback){
         var client = this.client;
         client.query("INSERT INTO rooms(name) VALUES('" + name + "')", (err, res) => {
             if (err){
               console.log(err);
             }
-            client.end();
+            callback(res);
          })
     }
 
@@ -54,7 +54,7 @@ class queries {
     }
 
     getObjectsInRoom(id, callback){
-        this.client.query("SELECT * FROM furniture WHERE pk=" + id, (err, res) => {
+        this.client.query("SELECT * FROM furniture WHERE roomID=" + id, (err, res) => {
             if (err){
                 console.log(err);
             }
@@ -80,44 +80,59 @@ class queries {
     ]
     */
     editObjectsInRoom(id, data, callback){
-        for (obj of data){
+        var promises = [];
+        for (var x = 0; x < data.length; x++){
+            var obj = data[x];
             if (obj.seat){
                 obj.width = 20;
                 obj.height = 20;
             }
             if (obj.new){
                 
-                this.client.query("INSERT INTO furniture(isSeat, width, height, x, y, available, roomID) VALUES($1, $2, $3, $4, $5, $6, $7)",
-                [
-                    obj.seat,
-                    obj.width,
-                    obj.height,
-                    obj.x,
-                    obj.y,
-                    true,
-                    id
-                ], (err, res) => {
-                    if (err){
-                        console.log(err);
-                    }
-                    callback(res);
+                let p = new Promise((resolve, reject) => {
+                    this.client.query("INSERT INTO furniture(isseat, width, height, x, y, available, roomID) VALUES($1, $2, $3, $4, $5, $6, $7)",
+                    [
+                        obj.seat,
+                        obj.width,
+                        obj.height,
+                        obj.x,
+                        obj.y,
+                        true,
+                        id
+                    ], (err, res) => {
+                        if (err){
+                            reject(err);
+                        }
+                        resolve(res.rows);
+                    });
                 });
+                promises.push(p);
+                
             }
             else{
-                this.client.query("UPDATE furniture SET isSeat=$1, width=$2, height=$3, x=$4, y=$5 WHERE pk=" + obj.id,[
-                    obj.seat,
-                    obj.width,
-                    obj.height,
-                    obj.x,
-                    obj.y
-                ],(err, res) =>{
-                    if (err){
-                        console.log(err);
-                    }
-                    callback(res);
-                })
+                let p = new Promise((resolve, reject) => {
+                    this.client.query("UPDATE furniture SET isSeat=$1, width=$2, height=$3, x=$4, y=$5 WHERE pk=" + obj.id,[
+                        obj.seat,
+                        obj.width,
+                        obj.height,
+                        obj.x,
+                        obj.y
+                    ],(err, res) =>{
+                        if (err){
+                            reject(err);
+                        }
+                        resolve(res);
+                    });
+                });
+
+                promises.push(p);
             }
         }
+        Promise.all(promises).then((res) => {
+            callback(res);
+        }).catch((l) => {
+            callback("Failed to update records.");
+        });
     }
 
     deleteRoom(id, callback){

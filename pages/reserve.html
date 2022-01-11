@@ -97,6 +97,15 @@
         document.getElementById("date").value = getTodaysDate();
         let diagram = new SeatingDiagram();
         diagram.render("Dining Room 1");
+        fetch("/getRoomData").then((res) => {
+          res.json().then((new_res)=>{
+            console.log(new_res);
+          }).catch((err)=>{
+            console.log(err);
+          });
+        }).catch((err) => {
+          console.log("Failed to get rooms");
+        })
       }
 
       //switches the diagram based on the selected room using SeatDiagram object

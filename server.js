@@ -25,20 +25,35 @@ const queries = require("./queries");
 const client2 = new Client()
 client2.connect();
 var querier = new queries(client2);
-querier.getRoomID("Awesome!", function(id){
-  querier.deleteRoom(id, function(){
-    querier.getRooms(function(rooms){
-      console.log("*********");
-      for (room of rooms){
-        console.log("ROOM: ");
-        console.log(room['pk']);
-        console.log(room['name']);
-        console.log("*********");
-      }
-    });
-  });
-});
+var data = [
+  {
+    id: 0,
+    new: true,
+    seat: true,
+    x: 100,
+    y: 100,
+    width: 20,
+    height: 20
+  },
+  {
+    id: 1,
+    new: true,
+    seat: false,
+    x: 150,
+    y: 100,
+    width: 100,
+    height: 40
+  },
+]
 
+
+
+/*
+querier.getRoomID("TEST", function(id){
+  querier.deleteRoom(id, function(){
+    console.log("DONE");
+  });
+});*/
 
 //sets an app.get for the given urlPath to the file at filepath
 //if filepath not given it defaults to the name of the url + .html in the pages folder
@@ -134,8 +149,41 @@ app.get("/gsignin/:token", function(req, res){
 //handle request to get room data
 app.get("/getRoomData", function(req, res){
 
+  querier.getRooms(function(rows){
+    var names = [];
+    for (row of rows){
+      names.push(row.name);
+    }
+    var promises = [];
+    for (n of names){
+      var p = new Promise((resolve, reject) => {
+        querier.getRoomID(n, function(id){
+          querier.editObjectsInRoom(id, data, function(res){
+            querier.getObjectsInRoom(id, function(rows){
+              if (rows.length == 0){
+                reject(rows);
+              }
+              else{
+                resolve(rows);
+              }
+            });
+          });
+        });
+      });
+      promises.push(p);
+    }
+    Promise.all(promises).then((out) => {
+      var final_res = [];
+      for (var i = 0; i < names.length; i++){
+        final_res.push({
+          [names[i]]: out[i]
+        });
+      }
+      res.json(final_res);
+    })
+  });
+  
 });
-
 
 
 //listen on the port dictated by the .env file
