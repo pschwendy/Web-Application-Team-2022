@@ -12,9 +12,12 @@ eventInfo jsonb);
 
 CREATE TABLE furniture(pk SERIAL PRIMARY KEY,
 isSeat BOOLEAN,
-room INTEGER NOT NULL,
 width INTEGER,
 height INTEGER,
 x INTEGER NOT NULL,
 y INTEGER NOT NULL,
-available BOOLEAN);
+available BOOLEAN,
+roomID INTEGER NOT NULL);
+
+CREATE TABLE rooms(pk SERIAL PRIMARY KEY,
+name VARCHAR(50) NOT NULL);

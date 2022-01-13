@@ -60,6 +60,7 @@ class queries {
             values: [email, password, name]
         }
 
+
         this.pool.query(query, (err) => {
             if(err) {
                 throw(err);
@@ -67,6 +68,7 @@ class queries {
             return callback(true);
         });
     } // signup()
+    
 
     // Queries.addReservations()
     // Adds a list of reservation to the database
@@ -102,12 +104,126 @@ class queries {
         return callback(good);
     } // addReservations()
 
+    // Queries.createRoom()
+    // To be used by Admin
+    // Creates a new room by name
+    createRoom(name, callback) {
+        // var client = this.client;
+        this.pool.query("INSERT INTO rooms(name) VALUES('" + name + "')", (err, res) => {
+            if (err){
+              console.log(err);
+            }
+            callback(res);
+         });
+    }
+
+    // Queries.getRooms()
+    // Returns all the rooms from the database
+    getRooms(callback) {
+        this.pool.query("SELECT * FROM rooms", (err, res) => {
+            if (err){
+                console.log(err);
+            }
+            callback(res.rows);
+        });
+    } // getRooms()
+
+    // !WE SHOULD NOT BE USING A FUNCTION LIKE THIS; I HAVE AN ALTERNATIVE METHOD -Peter
+    // Queries.getRooms()
+    // Returns the id of a room by name
+    getRoomID(name, callback) {
+        this.pool.query("SELECT * FROM rooms WHERE name='" + name + "'", (err, res) => {
+            if (err){
+                console.log(err);
+            }
+            callback(res.rows[0]['pk']);
+        });
+    } // getRooms()
+
+    //edit the objects in a room
+    //data is an object with the following structure
+    /*
+    [
+        {
+            id: (int),
+            new: (bool),
+            seat: (bool),
+            x: (int),
+            y: (int),
+            width: (int) (if not seat),
+            height: (int) (if not seat),
+
+        },
+        ...
+    ]
+    */
+
+    // Queries.editObjectsInRoom()
+    // To be used by admin
+    // Edits placement of objects in a room
+    editObjectsInRoom(id, data, callback) {
+        var promises = [];
+        for (var x = 0; x < data.length; x++) {
+            var obj = data[x];
+            if (obj.seat) {
+                obj.width = 20;
+                obj.height = 20;
+            }
+
+            if (obj.new) {
+                let p = new Promise((resolve, reject) => {
+                    this.pool.query("INSERT INTO furniture(isseat, width, height, x, y, available, roomID) VALUES($1, $2, $3, $4, $5, $6, $7)",
+                    [
+                        obj.seat, obj.width, obj.height, obj.x, obj.y, true, id
+                    ], (err, res) => {
+                        if (err){
+                            reject(err);
+                        }
+                        resolve(res.rows);
+                    });
+                });
+                promises.push(p);  
+            } else {
+                let p = new Promise((resolve, reject) => {
+                    this.pool.query("UPDATE furniture SET isSeat=$1, width=$2, height=$3, x=$4, y=$5 WHERE pk=" + obj.id,[
+                        obj.seat, obj.width, obj.height, obj.x, obj.y
+                    ],(err, res) =>{
+                        if (err){
+                            reject(err);
+                        }
+                        resolve(res);
+                    });
+                });
+
+                promises.push(p);
+            }
+        }
+        
+        Promise.all(promises).then((res) => {
+            callback(res);
+        }).catch((l) => {
+            callback("Failed to update records.");
+        });
+    } // editObjectsInRoom()
+
+    // Queries.deleteRoom()
+    // To be used by admin
+    // Deletes Room
+    deleteRoom(id, callback) {
+        this.pool.query("DELETE FROM rooms WHERE pk=" + id, (err, res) => {
+            if (err){
+                console.log(err);
+            }
+            callback();
+        }); 
+    } // deleteRoom()
+
     // Queries.getSeats()
     // Returns the seats in a given room
     // Input: room -> pretty self-explanatory if you ask me
     getSeats(room, callback) {
         const select = {
-            text: "SELECT * FROM furniture WHERE room=$1",
+            text: "SELECT * FROM furniture WHERE roomID=$1",
             values: [room]
         };
 
@@ -118,7 +234,7 @@ class queries {
                 return callback(rows.rows);
             }
         });
-    }
+    } // getSeats()
 }
 
 module.exports = queries;

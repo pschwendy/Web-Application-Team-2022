@@ -53,10 +53,7 @@
             <div class="mb-3">
               <label for="room-select">Room:</label>
               <select onchange="changeDiagram(this)" required id="room-select" name="room" class="form-select mb-3" aria-label=".form-select-lg example">
-                <option value="Dining Room 1">Dining Room 1</option>
-                <option value="Dining Room 2">Dining Room 2</option>
-                <option value="Theater">Theater</option>
-                <option value="VIP Room">VIP Room</option>
+                
               </select>              
             </div>
             <div class="mb-3" id="seatSelection">
@@ -95,8 +92,21 @@
       //set the date input to today's date on page load
       window.onload = function(){
         document.getElementById("date").value = getTodaysDate();
-        let diagram = new SeatingDiagram();
-        diagram.render("Dining Room 1");
+        var diagram;
+        fetch("/getRoomData").then((res) => {
+          res.json().then((new_res)=>{
+            for (room of new_res){
+              let key = Object.keys(room)[0];
+              document.getElementById("room-select").innerHTML += "<option value='" + key + "'>" + key + "</option>";
+            }
+            diagram = new SeatingDiagram(new_res);
+            diagram.render(Object.keys(new_res[0])[0]);
+          }).catch((err)=>{
+            console.log(err);
+          });
+        }).catch((err) => {
+          console.log("Failed to get rooms");
+        })
       }
 
       //switches the diagram based on the selected room using SeatDiagram object
