@@ -14,7 +14,9 @@
         
         <!--Include CSS Stylesheets-->
         <link rel="stylesheet" href="/public/theme.css">
+        <link rel="stylesheet" href="/public/Login.css">
         <link rel="stylesheet" href="/public/Nav.css">
+        <link rel="stylesheet" href="/public/HeroImage.css">
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
         <!-- Google Sign In -->
@@ -27,39 +29,45 @@
         <script type="module" src="/public/components/GoogleSignIn.js"></script>
         <script type="module" src="/public/components/NavBarButBetter.js"></script>
         <nav-bar-but-better></nav-bar-but-better>
-
-        <div class="container border bg-light" style="width: 60%; padding: 15px; border-radius: 10px; margin-top: 100px;">
-            <form action="/login-normal" method="POST" style="width: 90%; margin: auto;">
-                <div class="g-signin2" data-onsuccess="onSignIn"></div>
-                <script>
-                    function onSignIn(googleUser) {
-                        fetch('/gsignin/' + googleUser.getAuthResponse().id_token)
-                        .then(response => response.json())
-                        .then(data => console.log(data));
-                    }
-                </script>
-                <div class="mb-3">
-                    <h1>Log In</h1>
-                </div>
-                <div class="mb-3">
-                  <label for="username">Username or Email:</label>
-                  <br>
-                  <input required type="text" name="username" id="username" style="width: 100%;"/>     
-                </div>
-                <div class="mb-3">
-                    <label for="password">Password:</label>
-                    <br>
-                    <input type="password" required name="password" id="password" style="width: 100%;"/>     
-                </div>  
-                <div class="d-grid gap-2 col-6 mx-auto">
-                    <button style="margin-top: 20px;margin-bottom: 20px;"type="submit" class="btn btn-primary">Sign In</button>
-                </div>
-                <div class="mb-3 d-grid gap-2 col-6 mx-auto" style="text-align: center;">
-                    <h2>OR</h2>
-                    <button style="margin-top: 20px;" type="button" class="btn btn-primary">Sign in with Google</button>
-                </div>
-                
-            </form>
+        
+        <div id="page">
+            <div id="side-bar" class="container border bg-light" style="width: 30%; padding: 15px;">
+                <form action="/login-normal" method="POST" style="width: 90%; margin: auto;">
+                    
+                    <div class="mb-3">
+                        <h1>Log In</h1>
+                    </div>
+                    <div class="mb-3">
+                      <label for="username">Username or Email:</label>
+                      <br>
+                      <input required type="text" name="username" id="username" style="width: 100%;"/>     
+                    </div>
+                    <div class="mb-3">
+                        <label for="password">Password:</label>
+                        <br>
+                        <input type="password" required name="password" id="password" style="width: 100%;"/>     
+                    </div>  
+                    <div class="text-center" style="width: 100%;">
+                        <button style="margin-top: 10px; width: 100%; margin-bottom: 10px;"type="submit" class="btn btn-primary">Sign In</button>
+                        <h2>OR</h2>
+                        <div class="g-signin2" style="width: 240px;" data-onsuccess="onSignIn"></div>
+                        <script>
+                            function onSignIn(googleUser) {
+                                fetch('/gsignin/' + googleUser.getAuthResponse().id_token)
+                                .then(response => response.json())
+                                .then(data => console.log(data));
+                            }
+                        </script>
+                    </div>
+                    <div class="mb-3 d-grid gap-2 col-6 mx-auto" style="text-align: center;">
+                        
+                    </div>
+                    
+                </form>
+            </div>
         </div>
+        <script type="module" src="/public/components/HeroImage.js"></script>
+        <hero-image img="/public/images/derp.jpg"></hero-image>
+        
     </body>
 </html>

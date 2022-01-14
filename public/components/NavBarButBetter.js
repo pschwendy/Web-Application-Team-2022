@@ -2,7 +2,7 @@ import { html, define, render } from 'https://unpkg.com/hybrids@^6';
 
 define({
   tag: "nav-bar-but-better",
-  render: render(function(host){
+  render: render(function(host) {
     return html`
         <nav id="p-nav" class="header-top topnav fixed-top navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand brand" id="brand" href="/">Touch of Class Events</a>

@@ -79,8 +79,7 @@ class queries {
                 }).catch((err) => {
                     throw(err);
                 });
-            } else {               
-                console.log("PK: " + rows.rows[0].pk);
+            } else {
                 return rows.rows[0].pk;
             }
         })

@@ -1,0 +1,15 @@
+#page {
+    display: flex;
+
+}
+#side-bar{
+    max-width: 300px;
+    height: 100%;
+    text-align: left;
+    z-index: 1;
+    overflow-x: hidden;
+    padding: 0 16px;
+    flex-grow: 1;
+    display: flex;
+    position: fixed;
+}
