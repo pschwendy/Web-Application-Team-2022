@@ -11,7 +11,7 @@
     padding: 1em 5em 1em 1em;
     overflow: hidden;
     color: #fff; 
-    width: 60%;
+    width: 70%;
     height: 100%;
 }
 
@@ -32,9 +32,9 @@
     -webkit-transform-origin: 100% 0;
     -ms-transform-origin: 100% 0;
     transform-origin: 100% 0;
-    -webkit-transform: skew(-30deg);
-    -ms-transform: skew(-30deg);
-    transform: skew(-30deg);
+    -webkit-transform: skew(-20deg);
+    -ms-transform: skew(-20deg);
+    transform: skew(-20deg);
     z-index: -1;   
 }
 
@@ -50,9 +50,9 @@
     -webkit-transform-origin: 100% 0;
     -ms-transform-origin: 100% 0;
     transform-origin: 100% 100%;
-    -webkit-transform: skew(-30deg);
-    -ms-transform: skew(-30deg);
-    transform: skew(-30deg);
+    -webkit-transform: skew(-20deg);
+    -ms-transform: skew(-20deg);
+    transform: skew(-20deg);
     z-index: -1; 
 }
 

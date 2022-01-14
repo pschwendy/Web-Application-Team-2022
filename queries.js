@@ -13,7 +13,7 @@ let connectionString = {
 
 // checking to know the environment and suitable connection string to use
 if (env === 'development') {
-    connectionString.database = 'event_db';
+    connectionString.database = 'eventdb';
 } else {
     connectionString = {
         connectionString: process.env.DATABASE_URL,
@@ -85,8 +85,7 @@ class queries {
                 if(err) {
                     throw err;
                 } else if (rows.length == 0) {
-                    good = false;
-                    break;
+                    return callback(false);
                 }
 
                 const query = {
@@ -109,7 +108,12 @@ class queries {
     // Creates a new room by name
     createRoom(name, callback) {
         // var client = this.client;
-        this.pool.query("INSERT INTO rooms(name) VALUES('" + name + "')", (err, res) => {
+        const insert = {
+            text: "INSERT INTO rooms(name) VALUES($1)",
+            values: [name]
+        };
+
+        this.pool.query(insert, (err, res) => {
             if (err){
               console.log(err);
             }
@@ -120,7 +124,11 @@ class queries {
     // Queries.getRooms()
     // Returns all the rooms from the database
     getRooms(callback) {
-        this.pool.query("SELECT * FROM rooms", (err, res) => {
+        const select = {
+            text: "SELECT * FROM rooms",
+        };
+
+        this.pool.query(select, (err, res) => {
             if (err){
                 console.log(err);
             }

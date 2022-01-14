@@ -157,15 +157,13 @@ app.get("/getRoomData", function(req, res){
     for (n of names){
       var p = new Promise((resolve, reject) => {
         querier.getRoomID(n, function(id){
-          querier.editObjectsInRoom(id, data, function(res){
-            querier.getObjectsInRoom(id, function(rows){
-              if (rows.length == 0){
-                reject(rows);
-              }
-              else{
-                resolve(rows);
-              }
-            });
+          querier.getSeats(id, function(rows){
+            if (rows.length == 0){
+              reject(rows);
+            }
+            else{
+              resolve(rows);
+            }
           });
         });
       });
@@ -179,7 +177,9 @@ app.get("/getRoomData", function(req, res){
         });
       }
       res.json(final_res);
-    })
+    }).catch((reject) => {
+      console.log(reject);
+    });
   });
   
 });
