@@ -74,17 +74,40 @@
                 </div>
                 </div>
                 
-                <button style="margin-top: 20px; "type="submit" class="btn btn-primary">Save</button>
+                <button style="margin-top: 20px; " type="button" onclick="sendData()" class="btn btn-primary">Save</button>
                
               </form>
         </div>
     
         <script>
-            var diagram = new SeatingDiagram();
+            var diagram;
+            var roomVal;
             //sets the default diagram 
             window.onload = function(){
-                diagram.render("Dining Room 1");
-                diagram.makeEditable("Dining Room 1");
+                fetch("/getRoomData").then((res) => {
+                  res.json().then((new_res) => {
+                    diagram = new SeatingDiagram(new_res);
+
+                    var first = true;
+                    for (room of new_res){
+                      let key = Object.keys(room)[0];
+                      if (first){
+                        document.getElementById("room-select").innerHTML += "<option selected value='" + key + "'>" + key + "</option>";
+                        roomVal = key;
+                        first = false;
+                      }
+                      else{
+                        document.getElementById("room-select").innerHTML += "<option value='" + key + "'>" + key + "</option>";
+                      }
+                    }
+
+                    var x = Object.keys(new_res[0])[0];
+                    diagram.render(x);
+                    diagram.makeEditable(x);
+                  });
+                }).catch((err) => {
+                  console.log(err);
+                });
             }
 
             //switches the diagram based on the selected room using SeatDiagram object
@@ -92,6 +115,7 @@
             function changeDiagram(el){
               diagram.render(el.value);
               diagram.makeEditable(el.value);
+              roomVal = el.value;
             }
 
 
@@ -105,6 +129,10 @@
                 "width": w, 
                 "height": h,
               });
+            }
+
+            function sendData(){
+              var load = diagram.generateJSON(roomVal);
             }
 
         </script>

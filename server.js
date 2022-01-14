@@ -25,32 +25,54 @@ const queries = require("./queries");
 const client2 = new Client()
 client2.connect();
 var querier = new queries(client2);
-var data = [
-  {
-    id: 0,
+
+
+function createSeat(x, y, available=true){
+  return {
+    pk: 0,
     new: true,
     seat: true,
-    x: 100,
-    y: 100,
+    x: x,
+    y: y,
     width: 20,
-    height: 20
-  },
-  {
-    id: 1,
+    height: 20,
+    available: available
+  }
+}
+
+function createBuildingPiece(x, y, width, height){
+  return {
+    pk: 0,
     new: true,
     seat: false,
-    x: 150,
-    y: 100,
-    width: 100,
-    height: 40
-  },
+    x: x,
+    y: y,
+    width: width,
+    height: height
+  }
+}
+
+var data = [
+  createSeat(10, 50),
+    createSeat(10, 90, true),
+    createSeat(10, 130),
+    createBuildingPiece(60, 20, 20, 180),
+    createSeat(100, 50),
+    createSeat(100, 90),
+    createSeat(100, 130),
+    createSeat(160, 200),
+    createSeat(160, 240),
+    createSeat(160, 280),
+    createBuildingPiece(210, 170, 20, 180),
+    createSeat(250, 200),
+    createSeat(250, 240),
+    createSeat(250, 280)
 ]
 
-
 /*
-querier.getRoomID("TEST", function(id){
-  querier.deleteRoom(id, function(){
-    console.log("DONE");
+querier.getRoomID("Dining Room 1", function(id){
+  querier.editObjectsInRoom(id, data, function(){
+    console.log("dining");
   });
 });*/
 
@@ -157,15 +179,13 @@ app.get("/getRoomData", function(req, res){
     for (n of names){
       var p = new Promise((resolve, reject) => {
         querier.getRoomID(n, function(id){
-          querier.editObjectsInRoom(id, data, function(res){
-            querier.getObjectsInRoom(id, function(rows){
-              if (rows.length == 0){
-                reject(rows);
-              }
-              else{
-                resolve(rows);
-              }
-            });
+          querier.getObjectsInRoom(id, function(rows){
+            if (rows.length == 0){
+              reject(rows);
+            }
+            else{
+              resolve(rows);
+            }
           });
         });
       });
