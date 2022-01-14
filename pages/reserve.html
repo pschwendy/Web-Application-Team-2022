@@ -80,6 +80,7 @@
 
     <script>
       
+      var newRes;
       //gets todays date in a format that can be used for the value of the date input
       function getTodaysDate(){
         var today = new Date();
@@ -95,6 +96,8 @@
         var diagram;
         fetch("/getRoomData").then((res) => {
           res.json().then((new_res)=>{
+            console.log("NEW", new_res);
+            newRes = new_res;
             for (room of new_res){
               let key = Object.keys(room)[0];
               document.getElementById("room-select").innerHTML += "<option value='" + key + "'>" + key + "</option>";
@@ -111,7 +114,7 @@
 
       //switches the diagram based on the selected room using SeatDiagram object
       function changeDiagram(el){
-        let diagram = new SeatingDiagram();
+        let diagram = new SeatingDiagram(newRes);
         diagram.render(el.value);
       }
     </script>

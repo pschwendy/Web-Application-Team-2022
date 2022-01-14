@@ -11,7 +11,7 @@ var formidable = require("formidable");
 
 //dependencies for google sign in
 const {OAuth2Client} = require('google-auth-library');
-const client = new OAuth2Client("");
+const client = new OAuth2Client("409957581376-mj4a4cpr59lng5tojabia8ust2fblo47.apps.googleusercontent.com");
 
 //serve static files located in the public folder
 app.use("/public", express.static("./public"));
@@ -25,35 +25,49 @@ const queries = require("./queries");
 const client2 = new Client()
 client2.connect();
 var querier = new queries(client2);
-var data = [
-  {
-    id: 0,
+
+
+function createSeat(x, y, available=true){
+  return {
+    pk: 0,
     new: true,
     seat: true,
-    x: 100,
-    y: 100,
+    x: x,
+    y: y,
     width: 20,
-    height: 20
-  },
-  {
-    id: 1,
+    height: 20,
+    available: available
+  }
+}
+
+function createBuildingPiece(x, y, width, height){
+  return {
+    pk: 0,
     new: true,
     seat: false,
-    x: 150,
-    y: 100,
-    width: 100,
-    height: 40
-  },
+    x: x,
+    y: y,
+    width: width,
+    height: height
+  }
+}
+
+var data = [
+  createSeat(10, 50),
+    createSeat(50, 50),
+    createSeat(90, 50),
+    createSeat(10, 200),
+    createSeat(50, 200),
+    createSeat(90, 200)
 ]
 
-
 /*
-querier.getRoomID("TEST", function(id){
-  querier.deleteRoom(id, function(){
-    console.log("DONE");
+querier.getRoomID("VIP Room", function(id){
+  querier.editObjectsInRoom(id, data, function(){
+    console.log("dining3");
   });
-});*/
-
+});
+*/
 //sets an app.get for the given urlPath to the file at filepath
 //if filepath not given it defaults to the name of the url + .html in the pages folder
 function mapPath(urlPath, filepath=("/pages/" + urlPath + ".html")){
@@ -113,30 +127,32 @@ app.get("/gsignin/:token", function(req, res){
   async function verify() {
     const ticket = await client.verifyIdToken({
         idToken: gtoken,
-        audience: "",  // Specify the CLIENT_ID of the app that accesses the backend
+        audience: "409957581376-mj4a4cpr59lng5tojabia8ust2fblo47.apps.googleusercontent.com",  // Specify the CLIENT_ID of the app that accesses the backend
         // Or, if multiple clients access the backend:
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     });
     const payload = ticket.getPayload();
     var givenEmail = payload.email;
-    var valid = false;
-    //check if email exists yet
-
-
-    if (valid){
-      var sessionkey = createSessionKey();
-      //USE SESSION KEY IN THE DB SOMEWHERE
-      
-
-      //create cookies for email and key
-      res.cookie("email", givenEmail);
-      res.cookie("key", sessionkey);
-      res.redirect("/");
-    }
-    else{
-      //sign them up here
-      res.redirect("/");
-    }
+    var givenName = payload.name;
+    var sessionkey = createSessionKey();
+    //USE SESSION KEY IN THE DB SOMEWHERE
+    
+    await querier.googleSignIn(givenEmail, givenName)
+    .then((id) => {
+      if(id == -1) {
+        res.json(false);
+      } else {
+        res.cookie("email", givenEmail);
+        res.cookie("email", givenName);
+        res.cookie("id", id);
+        res.cookie("key", sessionkey);
+      }  
+    }).catch(e => {
+      console.log(e);
+    });
+    //create cookies for email and key
+    
+    res.redirect("/");
 
     // If request specified a G Suite domain:
     // const domain = payload['hd'];
@@ -147,18 +163,20 @@ app.get("/gsignin/:token", function(req, res){
 
 //handle request to get room data
 app.get("/getRoomData", function(req, res){
-
+  //console.log("Get some room data")
   querier.getRooms(function(rows){
     var names = [];
     for (row of rows){
       names.push(row.name);
     }
+    //console.log(names);
     var promises = [];
     for (n of names){
       var p = new Promise((resolve, reject) => {
         querier.getRoomID(n, function(id){
           querier.getSeats(id, function(rows){
-            if (rows.length == 0){
+            console.log(rows);
+            if (rows.length < 0){
               reject(rows);
             }
             else{
@@ -176,8 +194,10 @@ app.get("/getRoomData", function(req, res){
           [names[i]]: out[i]
         });
       }
+      //console.log("CHECK THIS: " +  final_res);
       res.json(final_res);
     }).catch((reject) => {
+      //console.log("oOps");
       console.log(reject);
     });
   });

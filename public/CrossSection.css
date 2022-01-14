@@ -28,7 +28,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: linear-gradient(white, #CDF0EA);
     -webkit-transform-origin: 100% 0;
     -ms-transform-origin: 100% 0;
     transform-origin: 100% 0;
@@ -46,7 +46,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: linear-gradient(#CDF0EA, white);
     -webkit-transform-origin: 100% 0;
     -ms-transform-origin: 100% 0;
     transform-origin: 100% 100%;

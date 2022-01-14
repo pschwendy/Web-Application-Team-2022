@@ -5,3 +5,8 @@
 .t-user {
     font-size: 1.1rem;
 }
+
+.bottom-border {
+    border-top: 3px dotted #000;
+    border-bottom: 3px dotted #000;
+}

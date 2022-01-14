@@ -16,13 +16,28 @@
         <link rel="stylesheet" href="/public/theme.css">
         <link rel="stylesheet" href="/public/Nav.css">
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+        <!-- Google Sign In -->
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+        <script src="https://apis.google.com/js/api:client.js"></script>
+        <meta name="google-signin-client_id" content="409957581376-mj4a4cpr59lng5tojabia8ust2fblo47.apps.googleusercontent.com">
     </head>
     <body>
+        <script type="module" src="/public/components/GoogleSignIn.js"></script>
         <script type="module" src="/public/components/NavBarButBetter.js"></script>
         <nav-bar-but-better></nav-bar-but-better>
 
         <div class="container border bg-light" style="width: 60%; padding: 15px; border-radius: 10px; margin-top: 100px;">
             <form action="/login-normal" method="POST" style="width: 90%; margin: auto;">
+                <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                <script>
+                    function onSignIn(googleUser) {
+                        fetch('/gsignin/' + googleUser.getAuthResponse().id_token)
+                        .then(response => response.json())
+                        .then(data => console.log(data));
+                    }
+                </script>
                 <div class="mb-3">
                     <h1>Log In</h1>
                 </div>

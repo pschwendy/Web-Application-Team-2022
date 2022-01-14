@@ -50,6 +50,62 @@ class queries {
         });
     } // signin()
 
+    // Queries.googleSignIn()
+    // Checks if database query @ username has password = input password
+    // Input: username -> username used for finding user in database
+    // Input: password -> checks if found user has this password
+    /*async googleSignIn(email,name, success) {
+        
+    } */// googleSignIn()
+
+    // Queries.googleSignIn()
+    // Signs In assuming a google account
+    async googleSignIn(email, name) {
+        const query = {
+            text: "SELECT * FROM users WHERE email=$1",
+            values: [email]
+        };
+
+        return await this.pool.query(query)
+        .then(rows => {
+            if (rows.rowCount == 0) {
+                const query = {
+                    text: "INSERT INTO users(email, password, name) VALUES ($1, $2, $3)",
+                    values: [email, "g", name]
+                }
+        
+                return this.pool.query(query).then(()=> {
+                    return this.getUserInfo(email);
+                }).catch((err) => {
+                    throw(err);
+                });
+            } else {               
+                console.log("PK: " + rows.rows[0].pk);
+                return rows.rows[0].pk;
+            }
+        })
+        .catch(e => { throw e });
+    } // googleSignUp()
+
+    // Signs Up assuming a google account
+    getUserInfo(email) {
+        const query = {
+            text: "SELECT * FROM users WHERE email=$1",
+            values: [email]
+        };
+
+        return this.pool.query(query)
+        .then(rows => {
+            if (rows.rowCount == 0) {
+                return -1;
+            } else {             
+                console.log("IN HERE");  
+                return rows.rows[0].pk;
+            }
+        })
+        .catch(e => { throw e });
+    } // googleSignUp()
+
     // Queries.signup()
     // Checks if database query @ username exists, if not, signs up w/ given parameters
     // Input: username -> username of new user
@@ -237,6 +293,7 @@ class queries {
 
         this.pool.query(select, (err, rows) => {
             if(err) {
+                console.log(err);
                 throw(err);
             } else {
                 return callback(rows.rows);

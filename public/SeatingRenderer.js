@@ -67,6 +67,8 @@ function createBuildingPiece(x, y, width, height){
 class Layout{
     constructor(items){
         this.objects = items;
+        this.roomid = this.objects[0].roomid;
+        this.deletedItems = [];
     }
 
     render(stage){
@@ -84,6 +86,45 @@ class Layout{
         else{
             s.tint = 0xD81159;
         }
+    }
+
+    getUpdateJSON(){
+        var deletedItems = this.deletedItems;
+        var filtered = [];
+        for (var obj of this.objects){
+            var failed = false;
+            if (obj.new){
+                for (item of deletedItems){
+                    if (item.identifier == obj.identifier){
+                        failed = true;
+                        break;
+                    }
+                }
+            }
+            if (!failed){
+                filtered.push({
+                    "pk":0,
+                    "new": obj.new,
+                    "isseat": obj.seat,
+                    "x": obj.x,
+                    "y": obj.y,
+                    "width":obj.width,
+                    "height":obj.height,
+                    "available":obj.taken                   
+                });
+            }
+        }
+        return filtered;
+    }
+
+    getDeletionJSON(){
+        var info = [];
+        for (var obj of this.deletedItems){
+            info.push({
+                "pk": obj.pk                
+            });
+        }
+        return info;
     }
 }
 
@@ -136,11 +177,22 @@ class SeatingDiagram{
     makeLayout(roomData){
         let arr = [];
         for (var piece of roomData){
-            if (piece.isSeat){
-                arr.push(createSeat(piece.x, piece.y, pice.available));
+            console.log("PIECE", piece);
+            if (piece.isseat){
+                var s = createSeat(piece.x, piece.y, !piece.available);
+                s.roomid = piece.roomid;
+                s.new = false;
+                s.pk = piece.pk;
+                s.seat = true;
+                arr.push(s);
             }
             else{
-                arr.push(createBuildingPiece(piece.x, piece.y, piece.width, piece.height));
+                var b = createBuildingPiece(piece.x, piece.y, piece.width, piece.height)
+                b.roomid = piece.roomid;
+                b.new = false;
+                b.pk = piece.pk;
+                b.seat = false;
+                arr.push(b);
             }
         }
         return new Layout(arr);
@@ -155,11 +207,11 @@ class SeatingDiagram{
         this.rooms.set("VIP Room", vipRoom);
         */
 
-        for (room of rooms){
+        for (var room of rooms){
             let key = Object.keys(room)[0]
             this.rooms.set(key, this.makeLayout(room[key]));
         }
-        this.rooms.set("", new Layout([]));
+        //this.rooms.set("", new Layout([]));
     }
 
     render(name){
@@ -196,6 +248,8 @@ class SeatingDiagram{
             newSeat.on("mousedown", onDragStart);
             newSeat.on("mousemove", onDragMove);
             newSeat.on("mouseup", onDragEnd);
+            newSeat.new = true;
+            newSeat.seat = true;
             room.objects.push(newSeat);
         }
         else{
@@ -204,10 +258,22 @@ class SeatingDiagram{
             newPiece.on("mousedown", onDragStart);
             newPiece.on("mousemove", onDragMove);
             newPiece.on("mouseup", onDragEnd);
+            newPiece.new = true;
+            newPiece.taken = false;
+            newPiece.seat = false;
             room.objects.push(newPiece);
             room.objects.push();
         }
         this.render(room_name);
+    }
+
+    //generate JSON about a given room for use by server
+    generateJSON(name){
+        return {
+            "updates": this.rooms.get(name).getUpdateJSON(),
+            "deletions": this.rooms.get(name).getDeletionJSON(),
+            "roomid": this.rooms.get(name).roomid
+        }
     }
 }
 
