@@ -102,6 +102,12 @@
     transform: translate(-50%, -50%);
 }
 
+@media only screen and (max-width: 768px) {
+    .cross-info-text {
+        width: 90%;
+    }
+}
+
 .cross-title {
     font-family: 'Nothing You Could Do', cursive;
     text-align: center;
@@ -110,7 +116,6 @@
 }
 
 .cross-descriptions {
-    
     font-size: 1.2em;
     padding-bottom: 20px;
 }
