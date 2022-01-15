@@ -6,6 +6,8 @@ var app = new PIXI.Application({
   backgroundColor: 0xD5DFE5
 });
 
+var diagram;
+
 //set size to 400 x 400 pixels
 app.renderer.autoResize = true;
 app.renderer.resize(300, 400);
@@ -65,10 +67,17 @@ function createBuildingPiece(x, y, width, height){
 //render- renders the given layout to the stage (must supply app.stage as a parameter)
 //takeSeat- changes the value of taken for the seat at the provided index
 class Layout{
-    constructor(items){
+    constructor(items=[]){
         this.objects = items;
-        this.roomid = this.objects[0].roomid;
+        if (items.length > 0){
+            this.roomid = this.objects[0].roomid;
+        }
         this.deletedItems = [];
+    }
+
+
+    init(){
+        this.roomid = this.objects[0].roomid;  
     }
 
     render(stage){
@@ -102,12 +111,14 @@ class Layout{
                 }
             }
             if (!failed){
+                console.log("X", obj.x);
+                console.log("Y", obj.y);
                 filtered.push({
-                    "pk":0,
+                    "pk":obj.pk,
                     "new": obj.new,
                     "isseat": obj.seat,
-                    "x": obj.x,
-                    "y": obj.y,
+                    "x": Math.round(obj.x),
+                    "y": Math.round(obj.y),
                     "width":obj.width,
                     "height":obj.height,
                     "available":obj.taken                   
@@ -126,6 +137,8 @@ class Layout{
         }
         return info;
     }
+
+    
 }
 
 var theater = new Layout([
@@ -175,6 +188,7 @@ var vipRoom = new Layout([
 class SeatingDiagram{
 
     makeLayout(roomData){
+        var roomToBeMade = new Layout();
         let arr = [];
         for (var piece of roomData){
             console.log("PIECE", piece);
@@ -184,6 +198,7 @@ class SeatingDiagram{
                 s.new = false;
                 s.pk = piece.pk;
                 s.seat = true;
+                s.parenter = roomToBeMade;
                 arr.push(s);
             }
             else{
@@ -192,14 +207,19 @@ class SeatingDiagram{
                 b.new = false;
                 b.pk = piece.pk;
                 b.seat = false;
+                b.parenter = roomToBeMade;
                 arr.push(b);
             }
         }
-        return new Layout(arr);
+        roomToBeMade.objects = arr;
+        roomToBeMade.init();
+        return roomToBeMade;
     }
 
     constructor(rooms){
         this.rooms =  new Map();
+        this.deleting = false;
+        diagram = this;
         /*
         this.rooms.set("Theater", theater);
         this.rooms.set("Dining Room 1", diningRoom1);
@@ -231,29 +251,35 @@ class SeatingDiagram{
                 obj.tint = 0x218380;
             }
             obj.interactive = true;
+            diagram = this;
             obj.on("mousedown", onDragStart);
             obj.on("mousemove", onDragMove);
             obj.on("mouseup", onDragEnd);
         }
     }
 
-    addItem(room_name, data){
+    addItem(room_name, data, x=0, y=0){
         console.log("Added");
         var room = this.rooms.get(room_name);
         if (data.isSeat){
-            var newSeat = createSeat(0, 0);
+            var newSeat = createSeat(x, y);
             newSeat.interactive = true;
             newSeat.taken = false;
             newSeat.tint = 0x218380;
-            newSeat.on("mousedown", onDragStart);
+            newSeat.on("mousedown", onDragStart/*function(){
+                console.log("WATCH THIS:");
+                onDragStart(event, x, newSeat);
+            }*/);
             newSeat.on("mousemove", onDragMove);
             newSeat.on("mouseup", onDragEnd);
             newSeat.new = true;
             newSeat.seat = true;
+            newSeat.deleting = this.deleting;
+            newSeat.parenter = room;
             room.objects.push(newSeat);
         }
         else{
-            var newPiece = createBuildingPiece(0, 0, data.width, data.height);
+            var newPiece = createBuildingPiece(x, y, data.width, data.height);
             newPiece.interactive = true;
             newPiece.on("mousedown", onDragStart);
             newPiece.on("mousemove", onDragMove);
@@ -261,11 +287,13 @@ class SeatingDiagram{
             newPiece.new = true;
             newPiece.taken = false;
             newPiece.seat = false;
+            newPiece.deleting = this.deleting;
+            newPiece.parenter = room;
             room.objects.push(newPiece);
-            room.objects.push();
         }
         this.render(room_name);
     }
+
 
     //generate JSON about a given room for use by server
     generateJSON(name){
@@ -275,19 +303,40 @@ class SeatingDiagram{
             "roomid": this.rooms.get(name).roomid
         }
     }
+
+    toggleDeleting(name){
+        this.deleting = !this.deleting;
+    }
 }
 
 
-
-
-function onDragStart(event)
+function onDragStart(event/*event, diagram, item*/)
 {
+
     // store a reference to the data
     // the reason for this is because of multitouch
     // we want to track the movement of this particular touch
-    this.data = event.data;
-    this.alpha = 0.5;
-    this.dragging = true;
+    if (diagram.deleting){
+        console.log("BYE BYE");
+        this.parenter.deletedItems.push({
+            pk: this.pk,
+            x: Math.round(this.position.x),
+            y: Math.round(this.position.y),
+            width: this.width,
+            height: this.height,
+            isseat: this.seat,
+            available: this.taken
+        });
+        app.stage.removeChild(this);
+        
+    }
+    else{
+        console.log("HERE");
+        this.data = event.data;
+        this.alpha = 0.5;
+        this.dragging = true;
+    }
+
 }
 
 function onDragEnd()
@@ -296,15 +345,18 @@ function onDragEnd()
 
     this.dragging = false;
     this.data = null;
-    obj.tint = 0x218380;
+    this.tint = 0x218380;
 }
 
 function onDragMove()
 {
+    console.log("HERELLLL")
     if (this.dragging)
     {
+        console.log("HEREX");
         var newPosition = this.data.getLocalPosition(this.parent);
         this.position.x = newPosition.x;
         this.position.y = newPosition.y;
     }
+    
 }

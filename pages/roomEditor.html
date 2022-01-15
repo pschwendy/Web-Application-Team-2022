@@ -19,6 +19,8 @@
     <body>
       <!--Include Componenent Scripts-->
       <script type="module" src="/public/components/NavBarButBetter.js"></script>
+      <script type="module" src="/public/components/AccountButton.js"></script>
+      
       <nav-bar-but-better></nav-bar-but-better>
       <div class="container border bg-light" style="padding: 15px; border-radius: 10px; margin-top: 100px;">
           <form>
@@ -55,10 +57,16 @@
                 </div>
                 <div>
                   <div class="container border" style="padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-                    <button class="btn btn-primary">Add seat</button>
+                    <button class="btn btn-danger" deleting="false" type="button" onclick="toggleDeleteMode(this)">Click to start deleting objects</button>
                   </div>
                   <div>
                     <div class="container border" style="padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                      <label>X (0 to 300):</label>
+                      <input id="seat_x" type="number" value="10"/>
+                      <label>Y (0 to 400):</label>
+                      <input id="seat_y" type="number" value="10"/>
+                      <br>
+                      <br>
                       <button type="button" onclick="createItem(false)" class="btn btn-primary">Add seat</button>
                     </div>
                     <div class="container border" style="padding: 10px; border-radius: 10px;">
@@ -66,6 +74,12 @@
                       <input id="width" type="number" value="10"/>
                       <label>Height:</label>
                       <input id="height" type="number" value="10"/>
+                      <br>
+                      <br>
+                      <label>X (0 to 300):</label>
+                      <input id="obj_x" type="number" value="10"/>
+                      <label>Y (0 to 400):</label>
+                      <input id="obj_y" type="number" value="10"/>
                       <br>
                       <br>
                       <button type="button" onclick="createItem(true)" class="btn btn-primary">Add building piece</button>
@@ -124,16 +138,53 @@
               let el = document.getElementById("room-select");
               var w = document.getElementById("width").value;
               var h = document.getElementById("height").value;
+              var x = 0;
+              var y = 0;
+              if (!piece){
+                x = document.getElementById("seat_x").value;
+                y = document.getElementById("seat_y").value;
+              }
+              else{
+                x = document.getElementById("obj_x").value;
+                y = document.getElementById("obj_y").value;
+              }
               diagram.addItem(el.value, {
                 "isSeat": !piece, 
                 "width": w, 
                 "height": h,
-              });
+              }, x, y);
             }
 
             function sendData(){
               var load = diagram.generateJSON(roomVal);
-              console.log(load);
+              console.log("Load", JSON.stringify(load));
+              fetch('/editRoomData', {
+                method: 'POST', // or 'PUT'
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(load),
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log('Success');
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+            }
+
+            function toggleDeleteMode(el){
+              if (el.deleting == "true"){
+                el.deleting = "false";
+                diagram.deleting = false;
+                el.innerHTML = "Click to start deleting objects";
+              }
+              else{
+                el.deleting = "true";
+                diagram.deleting = true;
+                el.innerHTML = "Click to stop deleting objects";
+              }
             }
 
         </script>

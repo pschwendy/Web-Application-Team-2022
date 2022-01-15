@@ -8,6 +8,11 @@
     align-items: center;
     height: 100vh;
     z-index: -1000;
+    
+}
+
+.head-hero::before{
+    background-image : linear-gradient(180deg, rgba(40, 60, 80, 0.75) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 .hero-holder {
@@ -15,19 +20,21 @@
     top: 0;
     right: 0;
     bottom: auto;
-    background-attachment: fixed;
+    /*background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    position: fixed;
+    position: fixed;*/
+    position: absolute;
     align-content: center;
     align-items: center;
     max-width: 100vw;
     height: 100vh;
+    background-image : linear-gradient(to top, #fff 0%, rgba(255,255,255,0) 40%);
 }
 
 .hero-text {
-    position: fixed;
+    position: absolute;
     width: auto;
     top: 50%;
     left: 50%;
@@ -37,6 +44,7 @@
     will-change: opacity; 
     opacity: 1;
     user-select: none;
+    width: 80%;
 }
 
 .hero {
@@ -46,6 +54,11 @@
     height: 100vh;
     font-size: 1.2em; 
     background-color: lightsalmon;
-    filter: brightness(50%);
+    filter: brightness(80%);
     z-index: -1000;
+}
+
+.tagline {
+    font-family: 'Nothing You Could Do', cursive;
+    font-size: 4em;
 }

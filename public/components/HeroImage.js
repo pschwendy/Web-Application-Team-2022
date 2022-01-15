@@ -10,11 +10,12 @@ define({
   render: render(function(host, tagline, description, link, img, alt){
     return html`
     <div class="head-hero">
+        <img src=${host.img} class="hero" alt="Hero">
         <div class="hero-holder">
-            <img src=${host.img} class="hero" alt="Hero">
+            
         </div>
         <div class='hero-text'>
-              <h1 class="">${host.tagline}</h1>
+              <h1 class="tagline">${host.tagline}</h1>
         </div>
     </div>
     `

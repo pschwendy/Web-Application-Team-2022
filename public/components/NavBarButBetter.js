@@ -1,5 +1,14 @@
 import { html, define, render } from 'https://unpkg.com/hybrids@^6';
 
+const parseCookie = str =>
+    str
+    .split(';')
+    .map(v => v.split('='))
+    .reduce((acc, v) => {
+        acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+        return acc;
+    }, {});
+
 define({
   tag: "nav-bar-but-better",
   render: render(function(host) {
@@ -19,7 +28,13 @@ define({
                     </li>
                 </ul>
                 <span id="account" class="float-right">
-                    <a href="/login" class="nav-item btn btn-primary mr-2">Log In</a>
+                    ${console.log(parseCookie(document.cookie))}
+                    ${document.cookie.indexOf("name") != -1 ? 
+                    html`
+                        <account-info name=${parseCookie(document.cookie).name}></account-info>
+                    `: html`
+                        <a href="/login" class="nav-item btn btn-primary mr-2">Log In</a>
+                    `}
                 </span>
             </div>
         </nav>

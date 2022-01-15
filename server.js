@@ -16,6 +16,9 @@ const client = new OAuth2Client("409957581376-mj4a4cpr59lng5tojabia8ust2fblo47.a
 //serve static files located in the public folder
 app.use("/public", express.static("./public"));
 
+app.use(express.json());
+app.use(express.urlencoded());
+
 //cookie parser middleware
 var cookieParser = require("cookie-parser");
 
@@ -97,7 +100,7 @@ function createSessionKey(){
   return key;
 }
 
-//handle a regular, non-Google log in attempt
+// Handle a regular, non-Google log in attempt
 app.post("/login-normal", function(req, res){
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files){
@@ -118,8 +121,9 @@ app.post("/login-normal", function(req, res){
 
         res.redirect("/");
     });
-});
+}); // login-normal
 
+// Verifies google signin and sets cookies
 app.get("/gsignin/:token", function(req, res){
   var gtoken = req.params.token;
 
@@ -143,7 +147,7 @@ app.get("/gsignin/:token", function(req, res){
         res.json(false);
       } else {
         res.cookie("email", givenEmail);
-        res.cookie("email", givenName);
+        res.cookie("name", givenName);
         res.cookie("id", id);
         res.cookie("key", sessionkey);
       }  
@@ -158,7 +162,7 @@ app.get("/gsignin/:token", function(req, res){
     // const domain = payload['hd'];
   }
   verify().catch(console.error);
-});
+}); // gsignin
 
 
 //handle request to get room data
@@ -175,7 +179,7 @@ app.get("/getRoomData", function(req, res){
       var p = new Promise((resolve, reject) => {
         querier.getRoomID(n, function(id){
           querier.getSeats(id, function(rows){
-            console.log(rows);
+            //console.log(rows);
             if (rows.length < 0){
               reject(rows);
             }
@@ -204,6 +208,37 @@ app.get("/getRoomData", function(req, res){
   
 });
 
+// Submits new room data to database
+app.post("/editRoomData", function(req, res){
+  querier.editObjectsInRoom(req.body.roomid, req.body.updates, function(y){
+    console.log(y);
+    var ids = [];
+    for (deletion of req.body.deletions){
+      ids.push(deletion.pk);
+    }
+    querier.deleteObjects(ids, function(x){
+      console.log("DID IT!!!!");
+      console.log(x);
+      res.redirect('/');
+    });
+    
+  });
+}); // editRoomData
+
+// Gets itinerary of user
+app.get("/getReservations", (req, res) => {
+  querier.getReservations(req.cookies['pk'], (results) => {
+    var dict = {};
+    for(result of results) {
+      if(result.timestamp in dict) {
+        dict[result.timestamp]++;
+      } else {
+        dict[result.timestamp] = 1;
+      }
+    }
+    res.json(dict);
+  });
+}); // getReservations
 
 //listen on the port dictated by the .env file
 app.listen(process.env.PORT_NUM, function(){

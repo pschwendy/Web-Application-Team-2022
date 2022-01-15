@@ -7,6 +7,6 @@
 }
 
 .bottom-border {
-    border-top: 3px dotted #000;
+    /*border-top: 3px dotted #000;*/
     border-bottom: 3px dotted #000;
 }

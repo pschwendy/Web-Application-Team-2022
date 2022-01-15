@@ -158,6 +158,22 @@ class queries {
         return callback(good);
     } // addReservations()
 
+    // Queries.getReservations()
+    // Gets a user's reservations
+    // Input: userpk -> userID
+    getReservations(userpk, callback) {
+        const select = {
+            text: "SELECT * FROM reservations WHERE userID=$1",
+            values: [userpk]
+        };
+
+        return this.pool.query(select)
+        .then(rows => {
+            return callback(rows.rows);
+        })
+        .catch(err => { throw err; });
+    } // addReservations()
+
     // Queries.createRoom()
     // To be used by Admin
     // Creates a new room by name
@@ -225,6 +241,7 @@ class queries {
     // To be used by admin
     // Edits placement of objects in a room
     editObjectsInRoom(id, data, callback) {
+        console.log("editing");
         var promises = [];
         for (var x = 0; x < data.length; x++) {
             var obj = data[x];
@@ -247,11 +264,14 @@ class queries {
                 });
                 promises.push(p);  
             } else {
+                console.log("Updating an old one");
                 let p = new Promise((resolve, reject) => {
-                    this.pool.query("UPDATE furniture SET isSeat=$1, width=$2, height=$3, x=$4, y=$5 WHERE pk=" + obj.id,[
-                        obj.seat, obj.width, obj.height, obj.x, obj.y
+                    this.pool.query("UPDATE furniture SET isSeat=$1, width=$2, height=$3, x=$4, y=$5 WHERE pk=" + obj.pk,[
+                        obj.isseat, obj.width, obj.height, obj.x, obj.y
                     ],(err, res) =>{
                         if (err){
+                            console.log("here batta batta");
+                            console.log(err);
                             reject(err);
                         }
                         resolve(res);
@@ -280,6 +300,26 @@ class queries {
             callback();
         }); 
     } // deleteRoom()
+
+    deleteObjects(ids, callback){
+        var promises = [];
+        for (var id of ids){
+            let p = new Promise((resolve, reject) => {
+                this.pool.query("DELETE FROM furniture WHERE pk=" + id, (err, res) => {
+                    if (err){
+                        reject(err);
+                    }
+                    resolve(res);
+                });
+            });
+            promises.push(p);
+        }
+        Promise.all(promises).then((results) => {
+            callback(results);
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
 
     // Queries.getSeats()
     // Returns the seats in a given room
