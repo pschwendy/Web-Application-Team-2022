@@ -19,7 +19,10 @@ define({
                 </div>
                 <div class="col">
                     <address class="page-list">
-                        
+                        <a className='foot-a' href='/'>Home</a><br>
+                        <a className='foot-a' href='/attractions'>Attractions</a><br>
+                        <a className='foot-a' href='/reserve'>Reserve Seats</a><br>
+                        <a className='foot-a' href='/login'>Login</a><br>
                     </address>                
                 </div>
             </div>
@@ -27,9 +30,9 @@ define({
         <hr>
         <div class="container-fluid text-center">
             <div class="pb-2">
-                <div class="container big-ml">
-                    <div class="row mb-3 text-left">
-                        <div class="col mx-2">
+                <div class="container">
+                    <div class="row mb-3">
+                        <div class="col-md mx-2">
                         Experiencing problems? Email us at huron.bpa@gmail.com
                         </div>
                     </div>

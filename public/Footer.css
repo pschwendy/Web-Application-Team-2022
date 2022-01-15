@@ -1,0 +1,59 @@
+
+a.icon-inherit,
+a.icon-inherit:hover{
+    color: white !important;
+}
+a.foot-a, a.foot-a:hover {
+    color: white !important;
+}
+
+a, a:hover {
+    color: inherit;
+}
+.foot {
+    overflow: auto;
+    background-color: #242124 !important;
+    position: relative;
+    color: white;
+}
+.page-list {
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.footer-logo {
+    height: auto;
+    left: 0;
+    width: 250px;
+}
+.big-ml {
+    margin-left: 60px;
+}
+
+.img-holder {
+    align-items: flex-start;
+    justify-content: left;
+}
+
+.map-head {
+    font-weight: bold;
+}
+
+.col-md {
+    text-align: left;
+}
+
+@media screen and (max-width: 768px) {
+    .foot-txt {
+        text-align: center;
+    }
+    
+    .page-list {
+        padding: 0 !important;
+        text-align: center;
+    }
+    .col, .col-md {
+        text-align: center;
+
+    }
+}
