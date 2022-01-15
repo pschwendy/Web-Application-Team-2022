@@ -100,6 +100,14 @@ function createSessionKey(){
   return key;
 }
 
+app.get('/logout', (req, res) => {
+  console.log("HERE");
+  res.clearCookie("email", { path: '/' });
+  res.clearCookie("name", { path: '/' });
+  res.clearCookie("id", { path: '/' });
+  res.clearCookie("key", { path: '/' });
+  res.redirect('/');
+})
 // Handle a regular, non-Google log in attempt
 app.post("/login-normal", function(req, res){
     var form = new formidable.IncomingForm();

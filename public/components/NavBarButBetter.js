@@ -28,7 +28,7 @@ define({
                     </li>
                 </ul>
                 <span id="account" class="float-right">
-                    ${console.log(parseCookie(document.cookie))}
+                    ${console.log(document.cookie)}
                     ${document.cookie.indexOf("name") != -1 ? 
                     html`
                         <account-info name=${parseCookie(document.cookie).name}></account-info>

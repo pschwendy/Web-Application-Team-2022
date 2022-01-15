@@ -30,7 +30,21 @@
         <script type="module" src="/public/components/NavBarButBetter.js"></script>
         <script type="module" src="/public/components/AccountButton.js"></script>
         <nav-bar-but-better></nav-bar-but-better>
-        
+        <script>
+            function removeG() {
+                console.log("CALLED: " + gapi.auth2.getAuthInstance());
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.disconnect();
+                console.log("DISCONNECTED");
+                fetch('/logout').then(result => {
+                    if(result) {
+                        location.reload();
+                    } else {
+                        alert("There was a problem removing cookies");
+                    }
+                })
+            }
+        </script>
         <div id="page">
             <div id="side-bar" class="container border bg-light" style="width: 30%; padding: 15px;">
                 <form action="/login-normal" method="POST" style="width: 90%; margin: auto;">
@@ -56,7 +70,9 @@
                             function onSignIn(googleUser) {
                                 fetch('/gsignin/' + googleUser.getAuthResponse().id_token)
                                 .then(response => response.json())
-                                .then(data => console.log(data));
+                                .then(data => {
+                                    
+                                });
                             }
                         </script>
                     </div>
