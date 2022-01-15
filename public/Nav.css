@@ -1,5 +1,7 @@
 #p-nav {
     padding: 16px 16px;
+    max-width: 100%;
+    background: rgb(33, 37, 41) !important;
 }
 
 .navbar-brand::after{

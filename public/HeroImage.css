@@ -11,6 +11,41 @@
     
 }
 
+@media only screen and (max-width: 768px) {
+    .head-hero{
+        max-height: 80vh !important;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        align-content: center;
+        align-items: center;
+    }
+    .hero-holder {
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: auto;
+        max-height: 80vh !important;
+        position: absolute;
+        align-content: center;
+        align-items: center;
+        max-width: 100vw;
+        background-image : linear-gradient(to top, #fff 0%, rgba(255,255,255,0) 40%);
+    }
+
+    .hero {
+        object-fit: cover;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        font-size: 1.2em; 
+        background-color: lightsalmon;
+        filter: brightness(60%) !important;
+        z-index: -1000;
+    }
+}
+
 .head-hero::before{
     background-image : linear-gradient(180deg, rgba(40, 60, 80, 0.75) 0%, rgba(255, 255, 255, 0) 100%);
 }
