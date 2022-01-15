@@ -5,11 +5,20 @@ const e = require('express');
 // await pool.connect()
 const env = process.env.NODE_ENV || 'development';
 
+/*
+let connectionString = {
+    user: 'postgres',
+    password: 'postgres1245',
+    port: 5433,
+};
+*/
+
 let connectionString = {
     user: 'event',
     password: 'supersecretpassword',
     port: 5432,
 };
+
 
 // checking to know the environment and suitable connection string to use
 if (env === 'development') {
@@ -254,7 +263,7 @@ class queries {
                 let p = new Promise((resolve, reject) => {
                     this.pool.query("INSERT INTO furniture(isseat, width, height, x, y, available, roomID) VALUES($1, $2, $3, $4, $5, $6, $7)",
                     [
-                        obj.seat, obj.width, obj.height, obj.x, obj.y, true, id
+                        obj.isseat, obj.width, obj.height, obj.x, obj.y, true, id
                     ], (err, res) => {
                         if (err){
                             reject(err);
