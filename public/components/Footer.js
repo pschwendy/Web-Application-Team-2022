@@ -5,7 +5,7 @@ define({
   screenSize: 0,
   render: render(function(host, screenSize) {
     return html`
-    <div style="color: white; padding-top:20px; background: black;" class="foot">
+    <div style="color: white; padding-top:20px; background: rgb(33, 37, 41);" class="foot">
         <div class="py-2 container">
             <div class="row">
                 <div class="col-md ml-2 mb-4"><img class="footer-logo pull-right img-fluid" src="public/images/logo-1.png"></img></div>
@@ -26,7 +26,7 @@ define({
         </div>
         <hr>
         <div class="container-fluid text-center">
-            <div class="mb-2">
+            <div class="pb-2">
                 <div class="container big-ml">
                     <div class="row mb-3 text-left">
                         <div class="col mx-2">

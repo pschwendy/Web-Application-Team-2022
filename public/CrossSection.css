@@ -1,17 +1,17 @@
 .cross-section {
+    text-align: center;
     display: flex;
     height: 400px;
     width: 100%;
     position: relative;
-    text-align: center !important;
 }
 
 .cross-info, .cross-info-second {
     position: relative;
     display: inline-block;
-    padding: 1em 5em 1em 1em;
+    padding: 40px 80px 40px 80px;
     overflow: hidden;
-    color: #fff; 
+    color: black; 
     /*width: 70%;*/
     flex: 50% 0 0;
     height: 100%;
@@ -19,7 +19,6 @@
 
 .cross-info-second {
     right: 0;
-    text-align: right;
 }
 
 .cross-image-holder::before {
@@ -30,6 +29,7 @@
     left: 0;
     width: 146px;
     height: 100%;
+    background: white;
     -webkit-transform-origin: 100% 0;
     -ms-transform-origin: 100% 0;
     transform-origin: 100% 0;
@@ -40,11 +40,12 @@
 }
 
 .cross-image-holder-second::after{
-    box-shadow: 0 4px 16px 0 rgba(100, 100, 200), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 4px 16px 0 rgb(126, 84, 29), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     content: '';
     position: absolute;
     top: 0;
     right: 0;
+    background: white;
     width: 146px;
     height: 100%;
     -webkit-transform-origin: 100% 0;
@@ -80,7 +81,7 @@
     z-index: -3;
 }
 
-.cross-image-holder::after {
+.cross-image-holder::after, .cross-image-holder-second::before {
     content: "";
     display: block;
     position: absolute;
@@ -92,3 +93,24 @@
     z-index: -2;
 }
 
+
+.cross-info-text {
+    position: absolute;
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cross-title {
+    font-family: 'Nothing You Could Do', cursive;
+    text-align: center;
+    color: black;
+    font-size: 2em;
+}
+
+.cross-descriptions {
+    
+    font-size: 1.2em;
+    padding-bottom: 20px;
+}
