@@ -21,12 +21,12 @@
 
         <!-- Google Sign In -->
         <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <script src="https://apis.google.com/js/api:client.js"></script>
         <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
         <script src="https://apis.google.com/js/api:client.js"></script>
         <meta name="google-signin-client_id" content="409957581376-mj4a4cpr59lng5tojabia8ust2fblo47.apps.googleusercontent.com">
     </head>
     <body>
-        <script type="module" src="/public/components/GoogleSignIn.js"></script>
         <script type="module" src="/public/components/NavBarButBetter.js"></script>
         <script type="module" src="/public/components/AccountButton.js"></script>
         <nav-bar-but-better></nav-bar-but-better>
@@ -62,18 +62,54 @@
                         <br>
                         <input type="password" required name="password" id="password" style="width: 100%;"/>     
                     </div>  
-                    <div class="text-center" style="width: 100%;">
+                    <div class="text-center" style="position:relative; width: 100%;">
                         <button style="margin-top: 10px; width: 100%; margin-bottom: 10px;"type="submit" class="btn btn-primary">Sign In</button>
-                        <h2>OR</h2>
-                        <div class="g-signin2" style="width: 240px;" data-onsuccess="onSignIn"></div>
+                        <div style="display: inline-flex; position: relative; text-align: center; width: 100%;">
+                          <div style="left: 0; margin-left: 5%; width: 40%; position: absolute; top: 50%; border: 1px solid black;"></div>
+                          <div style="position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%);">Or</div>
+                          <div style="margin-right: 5%; right:0; width: 40%; position: absolute; top: 50%; border: 1px solid black;"></div>
+                        </div>
+                        <button id="customBtn" data-onsuccess="onSignIn" onclick="return false;" style="margin-top: 20px; width: 100%;" class="customGPlusSignIn btn btn-success">
+                            <img class="google-logo" src="https://developers.google.com/identity/sign-in/g-normal.png">
+                            <span class="my-icon"></span>
+                            <div class="background-text">Sign In with Google</div>
+                        </button>
+                        
+                        <!--<h2>OR</h2>
+                        <div class="g-signin2" style="width: 100% !important;" data-onsuccess="onSignIn"></div>-->
                         <script>
+                            var googleUser = {};
+                            var startApp = function() {
+                                gapi.load('auth2', function() {
+                                    // Retrieve the singleton for the GoogleAuth library and set up the client.
+                                    auth2 = gapi.auth2.init({
+                                        client_id: '409957581376-mj4a4cpr59lng5tojabia8ust2fblo47.apps.googleusercontent.com',
+                                        cookiepolicy: 'single_host_origin',
+                                        // Request scopes in addition to 'profile' and 'email'
+                                        //scope: 'additional_scope'
+                                    });
+                                    attachSignin(document.getElementById('customBtn'));
+                                });
+                            };
+
+                            function attachSignin(element) {
+                                auth2.attachClickHandler(element, {}, function(googleUser) {
+                                    onSignIn(googleUser);
+                                });
+                                return false;
+                            }
+                            
+                            function onFailure(error) {
+                                console.log(error);
+                            }   
+
                             function onSignIn(googleUser) {
                                 fetch('/gsignin/' + googleUser.getAuthResponse().id_token)
-                                .then(response => response.json())
-                                .then(data => {
-                                    
+                                .then(() => {
+                                    location.replace("/");
                                 });
                             }
+                            startApp();
                         </script>
                     </div>
                     <div class="mb-3 d-grid gap-2 col-6 mx-auto" style="text-align: center;">

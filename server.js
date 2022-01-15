@@ -158,13 +158,12 @@ app.get("/gsignin/:token", function(req, res){
         res.cookie("name", givenName);
         res.cookie("id", id);
         res.cookie("key", sessionkey);
+        res.redirect("/");
       }  
     }).catch(e => {
       console.log(e);
     });
     //create cookies for email and key
-    
-    res.redirect("/");
 
     // If request specified a G Suite domain:
     // const domain = payload['hd'];
