@@ -61,6 +61,15 @@ function createBuildingPiece(x, y, width, height){
     return piece;
 }
 
+var incrementer = 0;
+function getRandomID(){
+    var code = "";
+    for (var x = 0; x < 6; x++){
+        code += Math.floor(Math.random() * 10);
+    }
+    return code;
+}
+
 
 //class for creating layout of seats and building pieces
 //each Layout instance can be used to represent a room
@@ -103,7 +112,7 @@ class Layout{
         for (var obj of this.objects){
             var failed = false;
             if (obj.new){
-                for (item of deletedItems){
+                for (var item of deletedItems){
                     if (item.identifier == obj.identifier){
                         failed = true;
                         break;
@@ -191,7 +200,7 @@ class SeatingDiagram{
         var roomToBeMade = new Layout();
         let arr = [];
         for (var piece of roomData){
-            console.log("PIECE", piece);
+            //console.log("PIECE", piece);
             if (piece.isseat){
                 var s = createSeat(piece.x, piece.y, !piece.available);
                 s.roomid = piece.roomid;
@@ -255,6 +264,8 @@ class SeatingDiagram{
             obj.on("mousedown", onDragStart);
             obj.on("mousemove", onDragMove);
             obj.on("mouseup", onDragEnd);
+            obj.off("click");
+            
         }
     }
 
@@ -266,6 +277,7 @@ class SeatingDiagram{
             newSeat.interactive = true;
             newSeat.taken = false;
             newSeat.tint = 0x218380;
+            newSeat.off('click');
             newSeat.on("mousedown", onDragStart/*function(){
                 console.log("WATCH THIS:");
                 onDragStart(event, x, newSeat);
@@ -276,6 +288,8 @@ class SeatingDiagram{
             newSeat.seat = true;
             newSeat.deleting = this.deleting;
             newSeat.parenter = room;
+            newSeat.identifier = getRandomID() + "" + incrementer;
+            incrementer++;
             room.objects.push(newSeat);
         }
         else{
@@ -289,6 +303,8 @@ class SeatingDiagram{
             newPiece.seat = false;
             newPiece.deleting = this.deleting;
             newPiece.parenter = room;
+            newPiece.identifier = getRandomID() + "" + incrementer;
+            incrementer++;
             room.objects.push(newPiece);
         }
         this.render(room_name);
@@ -313,11 +329,12 @@ class SeatingDiagram{
 function onDragStart(event/*event, diagram, item*/)
 {
 
+    //console.log("HIHIHI");
     // store a reference to the data
     // the reason for this is because of multitouch
     // we want to track the movement of this particular touch
     if (diagram.deleting){
-        console.log("BYE BYE");
+        //console.log("BYE BYE");
         this.parenter.deletedItems.push({
             pk: this.pk,
             x: Math.round(this.position.x),
@@ -327,11 +344,26 @@ function onDragStart(event/*event, diagram, item*/)
             isseat: this.seat,
             available: this.taken
         });
+        for (var i = 0; i < this.parenter.objects.length; i++){
+            if (this.parenter.objects[i].new){
+                if (this.parenter.objects[i].identifier == this.identifier){
+                    console.log("Removing");
+                    this.parenter.objects.splice(i, 1);
+                }    
+            }
+            else{
+                if (this.parenter.objects[i].pk == this.pk){
+                    console.log("Removing");
+                    this.parenter.objects.splice(i, 1);
+                }    
+            }
+            
+        }
         app.stage.removeChild(this);
         
     }
     else{
-        console.log("HERE");
+        //console.log("HERE");
         this.data = event.data;
         this.alpha = 0.5;
         this.dragging = true;
@@ -345,15 +377,14 @@ function onDragEnd()
 
     this.dragging = false;
     this.data = null;
-    this.tint = 0x218380;
 }
 
 function onDragMove()
 {
-    console.log("HERELLLL")
+    //console.log("HERELLLL")
     if (this.dragging)
     {
-        console.log("HEREX");
+        //console.log("HEREX");
         var newPosition = this.data.getLocalPosition(this.parent);
         this.position.x = newPosition.x;
         this.position.y = newPosition.y;
