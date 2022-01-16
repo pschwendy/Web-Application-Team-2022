@@ -37,7 +37,7 @@
               <input disabled type="text" class="form-control" id="attraction-name" aria-describedby="emailHelp">
             </div>
             <div class="mb-3">
-              <input disabled style="display: none;" type="text" class="form-control" id="pk" aria-describedby="emailHelp">
+              <input style="display: none;" type="text" name="pk" class="form-control" id="pk" aria-describedby="emailHelp">
             </div>
             <div class="mb-3">
               <label for="tickets" class="form-label">Number of Tickets:</label>
@@ -45,7 +45,7 @@
             </div>
             <div class="mb-3">
                 <label for="date" class="form-label">Date:</label>
-                <input type="date" class="form-control" id="date">
+                <input type="date" class="form-control" name="date" id="date">
               </div>
 
             <label for="time-group">Time:</label>
@@ -70,12 +70,36 @@
           </form>
     </div>
     
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
     <script>
+
+
+function getTodaysDate(){
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        return yyyy + "-" + mm + "-" + dd;
+      }
+
+      function getNextMonthsDate(){
+        var s = dayjs().add(1, 'month').format("YYYY-MM-DD").toString();
+        console.log(s);
+        return s;
+      }
+      
         window.onload = function(){
             const searchParams = new URLSearchParams(window.location.search);
             document.getElementById("attraction-name").value = searchParams.get("item");
             document.getElementById("pk").value = searchParams.get("pk");
             console.log(document.getElementById("pk").value);
+
+            var td = getTodaysDate();
+        var limit = getNextMonthsDate();
+        document.getElementById("date").value = td; 
+        document.getElementById("date").min = td;
+        document.getElementById("date").max = limit;
         }
     </script>
 

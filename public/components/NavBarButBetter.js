@@ -21,7 +21,7 @@ define({
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/reserve">Reserve a Table</a>
+                        <a class="nav-link" href="/reserve">Reserve Seats</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/attractions">Buy Tickets</a>
@@ -33,6 +33,7 @@ define({
                     html`
                         <account-info name=${parseCookie(document.cookie).name}></account-info>
                     `: html`
+                        <a href="/admin" class="nav-item btn btn-primary mr-2">Admin</a>
                         <a href="/login" class="nav-item btn btn-primary mr-2">Log In</a>
                     `}
                 </span>

@@ -18,18 +18,18 @@
       
       <nav-bar></nav-bar>
         <div class="container border bg-light" style="padding: 15px; border-radius: 10px; margin-top: 10vh;">
-            <form>
+            <form action="/createRoom" method="POST">
                 <div class="mb-3">
                     <h1>Create New Room</h1>
                 </div>
                 <div class="mb-3">
                   <label for="room-select">Room Name:</label>
-                  <input type="text" id="room-name"/>         
+                  <input required type="text" name="name" id="name"/>         
                 </div>
                 <div style="display: flex; flex-wrap: wrap;">
                   <div style="padding: 20px;">
                     <div class="mb-3" id="seatSelection">
-                      <label for="attraction-name-ui" class="form-label">Layout (Drag around parts to rearrange)</label>
+                      <label for="attraction-name-ui" class="form-label">Empty Layout</label>
         
                       
                       <!--Diagram to show Seats-->
@@ -40,24 +40,6 @@
                       
                     </div>
                     <!--Labels for the diagram-->
-                    <div class="mb-3" style="display: flex;">
-                      <t style="color: #218380; margin-right: 20px;">Seat</t>
-                      <t style="color: #BB9457;">Building Layout</t>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="container border" style="padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-                      <button type="button" onclick="createItem(false)" class="btn btn-primary">Add seat</button>
-                    </div>
-                    <div class="container border" style="padding: 10px; border-radius: 10px;">
-                      <label>Width:</label>
-                      <input id="width" type="number" value="10"/>
-                      <label>Height:</label>
-                      <input id="height" type="number" value="10"/>
-                      <br>
-                      <br>
-                      <button type="button" onclick="createItem(true)" class="btn btn-primary">Add building piece</button>
-                    </div>
                   </div>
                 </div>
                 
@@ -68,6 +50,8 @@
     
         <script>
             var diagram = new SeatingDiagram();
+
+
             //sets the default diagram 
             window.onload = function(){
                 diagram.render("");

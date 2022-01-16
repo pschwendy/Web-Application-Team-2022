@@ -26,6 +26,7 @@ app.use(cookieParser());
 //SAMPLE CODE FROM NODE POSTGRES THING
 const { Client } = require('pg');
 const queries = require("./queries");
+const { user } = require("pg/lib/defaults");
 const client2 = new Client()
 client2.connect();
 var querier = new queries(client2);
@@ -154,7 +155,8 @@ mapPath("/createRoom", "/pages/roomCreator.html");
 mapPath("/login");
 mapPath("/itinerary");
 mapPath("/createEvent", "/pages/eventCreator.html");
-mapPath("/admin", "/pages/admin.html");
+mapPath("/admin", "/pages/encrypted.html");
+mapPath("/signup");
 
 //function to create a session key for a user who signed in successfully
 function createSessionKey(){
@@ -175,8 +177,27 @@ app.get('/logout', (req, res) => {
 })
 // Handle a regular, non-Google log in attempt
 app.post("/login-normal", function(req, res){
-    var form = new formidable.IncomingForm();
-    form.parse(req, function(err, fields, files){
+    var username = req.body.username;
+    console.log(username);
+    var password = req.body.password;
+    console.log(password);
+    querier.signin(username, password)
+    .then(result => {
+      console.log(result);
+      if(result.pk == -1) {
+        res.json(false);
+      } else {
+        res.cookie("email", username);
+        res.cookie("name", result.name);
+        res.cookie("id", result.pk);
+        res.cookie("key", sessionkey);
+        res.redirect("/");
+      }  
+    }).catch(e => {
+      console.log(e);
+    });
+    /*var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
         //handle potential form processing error
         if (err){
             console.log(err);
@@ -185,16 +206,48 @@ app.post("/login-normal", function(req, res){
         }
 
         //handle username and password validation here
-        var uname = fields.username;
-        var pwd = fields.password;
-        console.log("USERNAME", uname);
-        console.log("PASSWORD", pwd);
+        var username = fields.username;
+        var password = fields.password;
+        querier.signin(username, password)
+        .then(id => {
+          if(id == -1) {
+            res.json(false);
+          } else {
+            res.cookie("email", givenEmail);
+            res.cookie("name", givenName);
+            res.cookie("id", id);
+            res.cookie("key", sessionkey);
+            res.redirect("/");
+          }  
+        }).catch(e => {
+          console.log(e);
+        });
 
         //create a session key if successful, then send them back
-
-        res.redirect("/");
-    });
+    });*/
 }); // login-normal
+
+
+app.post("/signup-normal", function(req, res){
+  var username = req.body.username;
+  var password = req.body.password;
+  var name = req.body.name;
+  querier.signup(username, name, password)
+  .then(id => {
+    console.log(id);
+    if(id == -1) {
+      res.json(false);
+    } else {
+      res.cookie("email", username);
+      res.cookie("name", name);
+      res.cookie("id", id);
+      res.redirect("/");
+    }  
+  }).catch(e => {
+    console.log(e);
+  });
+  
+});
 
 // Verifies google signin and sets cookies
 app.get("/gsignin/:token", function(req, res){
@@ -394,12 +447,26 @@ app.get("/getRoomData/:date/:time", function(req, res){
   
 });
 
+app.post("/createRoom", function(req, resX){
+  querier.createRoom(req.body.name, function(){
+    querier.getRoomID(req.body.name, function(id){
+      querier.editObjectsInRoom(id, [createSeat(10, 10, true)], function(){
+        resX.send("<p>Room created</p><p><a href='/admin'>Back to admin page</a></p>");
+      });
+    });
+  });
+});
+
+
+
 app.post("/reserveEvent", function(req, res){
   var name = req.cookies.id;
   if (name != undefined){
     var reservations = [];
     var tickets = req.body.tickets;
     var event = req.body.pk;
+    console.log("TICKETS", tickets);
+    console.log("EVENT", event);
     var dtObject = {
       "time": req.body.date + " " + (12 + parseInt(req.body.time)),
       "format": "YYYY-MM-DD HH24"
@@ -556,6 +623,10 @@ app.post("/deleteReservations", (req, res) => {
       isseat: isseat,
       timestamp: timestamp,
       formatting: formatting
+    }, (result) => {
+      if(result) {
+        res.json(true);
+      }
     });
   } else {
     querier.deleteEventReservation({
@@ -564,6 +635,10 @@ app.post("/deleteReservations", (req, res) => {
       event: event,
       timestamp: timestamp,
       formatting: formatting
+    }, (result) => {
+      if(result) {
+        res.json(true);
+      }
     });
   }
   

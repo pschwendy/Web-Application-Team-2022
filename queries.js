@@ -51,7 +51,7 @@ class queries {
         });
     }
 
-    deleteEventReservation(reservation_data) {
+    deleteEventReservation(reservation_data, callback) {
         const select = {
             text: "DELETE FROM reservations WHERE userID=$1 AND isseat=$2 AND event=$3 AND timestampTO_TIMESTAMP($4, $5)",
             values: [reservation_data.userID, reservation_data.isseat, reservation_data.event, reservation_data.timestamp, reservation_data.formatting]
@@ -60,11 +60,12 @@ class queries {
             if(err) {
                 throw err;
             }
+            return callback(true);
             console.log("AYYY");
         });
     }
 
-    deleteSeatReservations(reservation_data) {
+    deleteSeatReservations(reservation_data, callback) {
         console.log("IN HERE");
         const select = {
             text: "DELETE FROM reservations WHERE userID=$1 AND isseat=$2 AND timestamp=TO_TIMESTAMP($3, $4)",
@@ -74,6 +75,7 @@ class queries {
             if(err) {
                 throw err;
             }
+            return callback(true);
             console.log("AYYY");
         });
     }
@@ -92,21 +94,40 @@ class queries {
     // Checks if database query @ username exists, if not, signs up w/ given parameters
     // Input: username -> username used for finding user in database
     // Input: password -> checks if found user has this password
-    signin(email, callback, password = "g") {
+    signin(email, password) {
         const select = {
-            text: "SELECT password FROM users WHERE email=$1",
+            text: "SELECT * FROM users WHERE email=$1",
             values: [email]
         };
-
-        this.pool.query(select, (err, rows) => {
-            if(err) {
-                throw err;
-            } else if (rows.length == 0) {
-                return callback(false);
+        console.log("HELLO");
+        return this.pool.query(select)
+        .then(rows => {
+            console.log("IN HERE");
+            console.log(rows.rowCount);
+            console.log(rows.rows);
+            if (rows.rowCount == 0) {
+                var result = {
+                    pk: -1,
+                    name: ""
+                };
+                console.log(result);
+                return result;
             } else if(password == rows.rows[0].password) {
-                return callback(true);
+                var result = {
+                    pk: rows.rows[0].pk,
+                    name: rows.rows[0].name
+                };
+                console.log(result);
+                return result;
+            } else {
+                var result = {
+                    pk: -1,
+                    name: ""
+                };
+                console.log(result);
+                return result;
             }
-        });
+        }).catch(err => { throw err; })
     } // signin()
 
     // Queries.googleSignIn()
@@ -168,19 +189,46 @@ class queries {
     // Checks if database query @ username exists, if not, signs up w/ given parameters
     // Input: username -> username of new user
     // Input: password -> password of new user
-    signin(email, callback, name, password = "g") {
+    signup(email, name, password) {
         const query = {
+            text: "SELECT * FROM users WHERE email=$1",
+            values: [email]
+        };
+
+        return this.pool.query(query)
+        .then(rows => {
+            console.log("HELLO");
+            if (rows.rowCount == 0) {
+                const query = {
+                    text: "INSERT INTO users(email, password, name) VALUES ($1, $2, $3)",
+                    values: [email, "g", name]
+                }
+                return this.pool.query(query).then(()=> {
+                    return this.getUserInfo(email);
+                }).catch((err) => {
+                    throw(err);
+                });
+            } else {
+                if(password == rows.rows[0].password) {
+                    return rows.rows[0].pk;
+                }
+                
+            }
+        })
+        .catch(e => { throw e });
+        /*const query = {
             text: "INSERT INTO users(email, username, password, name) VALUES ($1, $1, $2, $3)",
             values: [email, password, name]
         }
 
 
-        this.pool.query(query, (err) => {
+        return this.pool.query(query)
+        .catch(err => {
             if(err) {
                 throw(err);
             }
             return callback(true);
-        });
+        });*/
     } // signup()
     
 
@@ -255,7 +303,7 @@ class queries {
                     } 
 
                     const select2 = {
-                        text: "SELECT * FROM events WHERE eventID=$1",
+                        text: "SELECT * FROM events WHERE pk=$1",
                         values: [reservation.eventID]
                     }
 
@@ -263,14 +311,16 @@ class queries {
                         if (err){
                             reject("errored out");
                         }
-                        console.log(results);
+                        console.log(reservation.eventID);
+                        console.log("**************************LOOOK HERE**********************");
+                        console.log(results.rows[0]["name"]);
                         if (results.rows[0]["capacity"] < rows.rows.length){
                             reject("Overfilled");
                         }
                         else{
                             var query = {
                                 text: "INSERT INTO reservations(isSeat, userID, eventID, event, timestamp) VALUES ($5, $1, $2, $6, TO_TIMESTAMP($3, $4))",
-                                values: [reservation.userID, reservation.eventID, reservation.date, reservation.formatting, reservation.seat, results.rows[0]["e"]]
+                                values: [reservation.userID, reservation.eventID, reservation.date, reservation.formatting, reservation.seat, results.rows[0]["name"]]
                             }
                     
                             this.pool.query(query, (err, rows) => {

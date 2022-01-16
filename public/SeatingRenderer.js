@@ -209,6 +209,7 @@ class SeatingDiagram{
                 s.seat = true;
                 s.parenter = roomToBeMade;
                 arr.push(s);
+
             }
             else{
                 var b = createBuildingPiece(piece.x, piece.y, piece.width, piece.height)
@@ -221,7 +222,9 @@ class SeatingDiagram{
             }
         }
         roomToBeMade.objects = arr;
-        roomToBeMade.init();
+        if (arr.length > 0){
+            roomToBeMade.init();
+        }
         return roomToBeMade;
     }
 
@@ -313,6 +316,7 @@ class SeatingDiagram{
 
     //generate JSON about a given room for use by server
     generateJSON(name){
+        this.rooms.get(name).init();
         return {
             "updates": this.rooms.get(name).getUpdateJSON(),
             "deletions": this.rooms.get(name).getDeletionJSON(),

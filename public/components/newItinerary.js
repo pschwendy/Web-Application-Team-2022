@@ -1,15 +1,32 @@
 class Itinerary {
-    constructor() { }
+    constructor() { 
+        this.el = document.getElementById('tasks');
+    }
     
     table = [];
-    el = document.getElementById('tasks');
+    
 
     fetchAll() {
+        /*var el = document.getElementById('tasks');
+        el.innerHTML = '';
+        console.log(el.innerHTML);
+        var child = el.lastElementChild; 
+        while (child) {
+            console.log(child);
+            el.removeChild(child);
+            child = el.lastElementChild;
+        }
+        console.log(el.lastElementChild);*/
+        $("#tasks").html('');
+        console.log("TASKS: " + $("#tasks").html());
+        console.log("TASKS: " + this.el.innerHTML);
         fetch("/getReservations")
         .then(res => res.json())
         .then(dict => {
+            console.log("TASKS1234: " + this.el.innerHTML);
             console.log(dict);
             for(const [timestamp, reservations] of Object.entries(dict)) {
+                console.log("TASKS12456: " + this.el.innerHTML);
                 console.log(timestamp);
                 console.log(reservations);
                 for (const [isseat, reservation] of Object.entries(reservations)) {
@@ -32,7 +49,7 @@ class Itinerary {
                     }
                 }
             }
-
+            console.log("TABLE LENGTH: " + this.table.length);
             var data = '';
             var i = 1;
             for(var j = 0; j < this.table.length; ++j) {
@@ -73,10 +90,11 @@ class Itinerary {
 
             this.Count(i-1);
             //console.log(this.tasks);
-
+            console.log("TASKS12454io3u4i6: " + this.el.innerHTML);
             //console.log("Aarnav Here are the dates");
             //console.log(this.dates);
-            return this.el.innerHTML = data;
+            $("#tasks").html(data);
+            //return el.innerHTML = data;
         });
     }
     
@@ -98,6 +116,7 @@ class Itinerary {
     }
 
     Delete(j) {
+        console.log("DELETING");
         fetch('/deleteReservations', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
@@ -107,8 +126,13 @@ class Itinerary {
                 event: this.table[j].event,
                 isseat: this.table[j].isseat,
             })
+        }).then(res => res.json())
+        .then(res => {
+            if(res) {
+                this.fetchAll();
+            }
         })
-        this.table.splice(j, 1);
-        this.fetchAll();
+        this.table = [];
+        
     }
 }
