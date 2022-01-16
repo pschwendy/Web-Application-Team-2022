@@ -38,6 +38,56 @@ class queries {
         this.pool.connect();
     } // constructor()
 
+    deleteReservation(reservation_data) {
+        const select = {
+            text: "DELETE FROM reservations WHERE userID=$1 AND timestamp=TO_TIMESTAMP($2, $3)",
+            values: [reservation_data.userID, reservation_data.date, reservation_data.formatting]
+        }
+        this.pool.query(select, (err) => {
+            if(err) {
+                throw err;
+            }
+            console.log("AYYY");
+        });
+    }
+
+    deleteEventReservation(reservation_data) {
+        const select = {
+            text: "DELETE FROM reservations WHERE userID=$1 AND isseat=$2 AND event=$3 AND timestampTO_TIMESTAMP($4, $5)",
+            values: [reservation_data.userID, reservation_data.isseat, reservation_data.event, reservation_data.timestamp, reservation_data.formatting]
+        }
+        this.pool.query(select, (err) => {
+            if(err) {
+                throw err;
+            }
+            console.log("AYYY");
+        });
+    }
+
+    deleteSeatReservations(reservation_data) {
+        console.log("IN HERE");
+        const select = {
+            text: "DELETE FROM reservations WHERE userID=$1 AND isseat=$2 AND timestamp=TO_TIMESTAMP($3, $4)",
+            values: [reservation_data.userID, reservation_data.isseat, reservation_data.timestamp, reservation_data.formatting]
+        }
+        this.pool.query(select, (err) => {
+            if(err) {
+                throw err;
+            }
+            console.log("AYYY");
+        });
+    }
+
+    deleteAllReservations(){
+        const select = {
+            text: "DELETE FROM reservations",
+            values: [reservation_data.pk, reservation_data.userID, reservation_data.date, reservation_data.formatting]
+        }
+        this.pool.query(select, (err, rows) => {
+            console.log("ALL RESERVATIONS DELETED.");
+        });
+    }
+
     // Queries.signin()
     // Checks if database query @ username exists, if not, signs up w/ given parameters
     // Input: username -> username used for finding user in database
@@ -138,41 +188,139 @@ class queries {
     // Adds a list of reservation to the database
     // Input: newReservations -> gee, I wonder what these are
     addReservations(newReservations, callback) {
-        var good = true;
-        for(reservation of newReservations) {
-            const select = {
-                text: "SELECT pk FROM reservations WHERE seatID=$1, timestamp=$2",
-                values: [reservation.seatID, reservation.timestamp]
-            };
-    
-            this.pool.query(select, (err, rows) => {
-                if(err) {
-                    throw err;
-                } else if (rows.length == 0) {
-                    return callback(false);
-                }
-
-                const query = {
-                    text: "INSERT INTO reservations(userID, seatID, timestamp) VALUES ($1, $2, $3)",
-                    values: [reservation.userID, reservation.seatID, reservation.timestamp]
-                }
+        var promises = [];
+        for( var reservationX of newReservations) {
+            //console.log("The power of the sun, in the palm of my hand:");
+            var p = new Promise((resolve, reject) => {
+                var reservation = reservationX;
+                //console.log(reservation);
+                const select = {
+                    text: "SELECT pk FROM reservations WHERE seatID=$1 AND timestamp=TO_TIMESTAMP($2, $3)",
+                    values: [reservation.seatID, reservation.date, reservation.formatting]
+                };
         
-                this.pool.query(query, (err) => {
+                this.pool.query(select, (err, rows) => {
                     if(err) {
-                        throw(err);
+                        throw err;
+                    } else if (rows.length > 0) {
+                        reject("Too many rows");
                     }
+    
+                    //console.log("GIVE ME OUTPUT:", reservation.seatID);
+
+                    var query = {
+                        text: "INSERT INTO reservations(isSeat, userID, seatID, timestamp) VALUES ($5, $1, $2, TO_TIMESTAMP($3, $4))",
+                        values: [reservation.userID, reservation.seatID, reservation.date, reservation.formatting, reservation.seat]
+                    }
+            
+                    this.pool.query(query, (err, rows) => {
+                        //console.log("You know, I'm something of a result myself.");
+                        //console.log(rows);
+                        if(err) {
+                            reject(err);
+                        }
+                        resolve("DOne");
+                    });
                 });
             });
+            
+            promises.push(p);
+
         }
-        return callback(good);
+        Promise.all(promises).then((resolve) => {
+            //console.log("WELL DONE");
+            return callback(true);
+        }).catch((err) => {
+            //console.log("Stings, doesn't it", err);
+            return callback(false);
+        });
+        
     } // addReservations()
+    
+    addNonSeatReservations(newReservations, callback) {
+        var promises = [];
+        for( var reservationX of newReservations) {
+            //console.log("The power of the sun, in the palm of my hand:");
+            var p = new Promise((resolve, reject) => {
+                var reservation = reservationX;
+                //console.log(reservation);
+                const select = {
+                    text: "SELECT pk FROM reservations WHERE eventID=$1 AND timestamp=TO_TIMESTAMP($2, $3)",
+                    values: [reservation.eventID, reservation.date, reservation.formatting]
+                };
+        
+                this.pool.query(select, (err, rows) => {
+                    if(err) {
+                        throw err;
+                    } 
+
+                    const select2 = {
+                        text: "SELECT * FROM events WHERE eventID=$1",
+                        values: [reservation.eventID]
+                    }
+
+                    this.pool.query(select2, (err, results)=>{
+                        if (err){
+                            reject("errored out");
+                        }
+                        if (results.rows[0]["capacity"] < rows.rows.length){
+                            reject("Overfilled");
+                        }
+                        else{
+                            var query = {
+                                text: "INSERT INTO reservations(isSeat, userID, eventID, event, timestamp) VALUES ($5, $1, $2, $6, TO_TIMESTAMP($3, $4))",
+                                values: [reservation.userID, reservation.eventID, reservation.date, reservation.formatting, reservation.seat, results.rows[0]["e"]]
+                            }
+                    
+                            this.pool.query(query, (err, rows) => {
+                                //console.log("You know, I'm something of a result myself.");
+                                //console.log(rows);
+                                if(err) {
+                                    reject(err);
+                                }
+                                resolve("Done");
+                            });
+                        }
+                    });
+    
+                    //console.log("GIVE ME OUTPUT:", reservation.seatID);
+
+                   
+                });
+            });
+            
+            promises.push(p);
+
+        }
+        Promise.all(promises).then((resolve) => {
+            //console.log("WELL DONE");
+            return callback(true);
+        }).catch((err) => {
+            //console.log("Stings, doesn't it", err);
+            return callback(false);
+        });
+        
+    } // addReservations()
+
+    createEvent(name, description, path, capacity, callback){
+        const select = {
+            text: "INSERT INTO events(name, description, capacity, image) VALUES ($1, $2, $3, $4)",
+            values: [name, description, capacity, path]
+        }
+        this.pool.query(select, (err, res) => {
+            if (err){
+                console.log(err);
+            }
+            callback(res);
+        });
+    }
 
     // Queries.getReservations()
     // Gets a user's reservations
     // Input: userpk -> userID
     getReservations(userpk, callback) {
         const select = {
-            text: "SELECT * FROM reservations WHERE userID=$1",
+            text: "SELECT * FROM reservations WHERE userID=$1 ORDER BY timestamp ASC",
             values: [userpk]
         };
 
@@ -227,6 +375,15 @@ class queries {
             callback(res.rows[0]['pk']);
         });
     } // getRooms()
+
+    clearFurniture(callback){
+        this.pool.query("DELETE FROM furniture", (err, res) => {
+            if (err){
+                console.log(err);
+            }
+            callback(res);
+        });
+    }
 
     //edit the objects in a room
     //data is an object with the following structure
@@ -348,6 +505,39 @@ class queries {
             }
         });
     } // getSeats()
+
+    getAvailableSeats(room, timeData, callback) {
+        const select = {
+            text: "SELECT * FROM furniture WHERE roomID=$1 AND pk NOT IN (SELECT seatID FROM reservations WHERE timestamp=TO_TIMESTAMP($2, $3))",
+            values: [room, timeData["time"], timeData["format"]]
+        };
+
+        this.pool.query(select, (err, rows) => {
+            if(err) {
+                console.log(err);
+                throw(err);
+            } else {
+                return callback(rows.rows);
+            }
+        });
+    } // getSeats()
+
+    getUnavailableSeats(room, timeData, callback) {
+        const select = {
+            text: "SELECT * FROM furniture WHERE roomID=$1 AND pk IN (SELECT seatID FROM reservations WHERE timestamp=TO_TIMESTAMP($2, $3))",
+            values: [room, timeData["time"], timeData["format"]]
+        };
+
+        this.pool.query(select, (err, rows) => {
+            if(err) {
+                console.log(err);
+                throw(err);
+            } else {
+                //console.log("DO YOU KNOW HOW MUCH I SACRIFICED: " + rows.rows.length);
+                return callback(rows.rows);
+            }
+        });
+    }
 }
 
 module.exports = queries;

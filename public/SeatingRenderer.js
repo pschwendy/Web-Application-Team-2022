@@ -200,7 +200,7 @@ class SeatingDiagram{
         var roomToBeMade = new Layout();
         let arr = [];
         for (var piece of roomData){
-            //console.log("PIECE", piece);
+            console.log("PIECE", piece);
             if (piece.isseat){
                 var s = createSeat(piece.x, piece.y, !piece.available);
                 s.roomid = piece.roomid;
@@ -322,6 +322,16 @@ class SeatingDiagram{
 
     toggleDeleting(name){
         this.deleting = !this.deleting;
+    }
+
+    getSelectedSeats(name){
+        var selected = [];
+        for (var obj of this.rooms.get(name).objects){
+            if (obj.taken){
+                selected.push(obj.pk);
+            }
+        }
+        return selected;
     }
 }
 

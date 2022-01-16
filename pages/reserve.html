@@ -34,21 +34,21 @@
                 <h1>Reserve Seats</h1>
             </div>
             <div class="mb-3">
-              <label for="date" class="form-label">Date:</label>
+              <label onchange="refreshDiagram()" for="date" class="form-label">Date:</label>
               <input required type="date" class="form-control" id="date">
             </div>
             <label for="time-group">Time:</label>
             <div id="time-group">
                 <div class="mb-3 form-check">
-                    <input checked required class="form-check-input" type="radio" name="time-options" id="time-1"/>
+                    <input onchange="refreshDiagram()" checked required class="form-check-input" type="radio" name="time-options" id="time-1"/>
                     <label class="form-check-label" for="time-1">3:00 p.m. - 5:00 p.m.</label>
                 </div>
                 <div class="mb-3 form-check">
-                    <input class="form-check-input" type="radio" name="time-options" id="time-2"/>
+                    <input onchange="refreshDiagram()" class="form-check-input" type="radio" name="time-options" id="time-2"/>
                     <label class="form-check-label" for="time-2">5:00 p.m. - 7:00 p.m.</label>
                 </div>
                 <div class="mb-3 form-check">
-                    <input class="form-check-input" type="radio" name="time-options" id="time-3"/>
+                    <input onchange="refreshDiagram()" class="form-check-input" type="radio" name="time-options" id="time-3"/>
                     <label class="form-check-label" for="time-3">7:00 p.m. - 9:00 p.m.</label>
                 </div>
             </div>
@@ -76,13 +76,19 @@
               <t style="color: #BB9457;">Building Layout</t>
             </div>
             
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="button" onclick="submitSelection()" class="btn btn-primary">Submit</button>
           </form>
     </div>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
     <script>
+
+    $("#date").on("change",function(){
+        refreshDiagram();
+    });
       
       var newRes;
+      var diagram;
       //gets todays date in a format that can be used for the value of the date input
       function getTodaysDate(){
         var today = new Date();
@@ -92,11 +98,20 @@
         return yyyy + "-" + mm + "-" + dd;
       }
 
+      function getNextMonthsDate(){
+        var s = dayjs().add(1, 'month').format("YYYY-MM-DD").toString();
+        console.log(s);
+        return s;
+      }
+
       //set the date input to today's date on page load
       window.onload = function(){
-        document.getElementById("date").value = getTodaysDate();
-        var diagram;
-        fetch("/getRoomData").then((res) => {
+        var td = getTodaysDate();
+        var limit = getNextMonthsDate();
+        document.getElementById("date").value = td; 
+        document.getElementById("date").min = td;
+        document.getElementById("date").max = limit;
+        fetch("/getRoomData/" + td + "/3").then((res) => {
           res.json().then((new_res)=>{
             console.log("NEW", new_res);
             newRes = new_res;
@@ -116,8 +131,73 @@
 
       //switches the diagram based on the selected room using SeatDiagram object
       function changeDiagram(el){
-        let diagram = new SeatingDiagram(newRes);
+        diagram = new SeatingDiagram(newRes);
         diagram.render(el.value);
+      }
+
+      function refreshDiagram(){
+        var time = getChosenTime();
+        var td = document.getElementById("date").value;
+        console.log("GOING FOR: ", td);
+        fetch("/getRoomData/" + td + "/" + time).then((res) => {
+          res.json().then((new_res)=>{
+            console.log("NEW", new_res);
+            newRes = new_res;
+            document.getElementById("room-select").innerHTML = "";
+            for (room of new_res){
+              let key = Object.keys(room)[0];
+              document.getElementById("room-select").innerHTML += "<option value='" + key + "'>" + key + "</option>";
+            }
+            diagram = new SeatingDiagram(new_res);
+            diagram.render(Object.keys(new_res[0])[0]);
+          }).catch((err)=>{
+            console.log(err);
+          });
+        }).catch((err) => {
+          console.log("Failed to get rooms");
+        })
+      }
+
+      function getChosenTime(){
+        var first = document.getElementById("time-1").checked;
+        if (first){
+          return 3;
+        }
+        var second = document.getElementById("time-2").checked;
+        if (second){
+          return 5;
+        }
+        var third = document.getElementById("time-3").checked;
+        if (third){
+          return 7;
+        }
+      }
+
+      function submitSelection(){
+        var load = {
+          "seats": diagram.getSelectedSeats(document.getElementById("room-select").value),
+          "date": document.getElementById("date").value,
+          "time": getChosenTime()
+        }
+        console.log(load.time);
+        fetch('/reserveSeats', {
+          method: 'POST', // or 'PUT'
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(load),
+        })
+        .then(response => response.json().then((server_msg) => {
+          if (server_msg.code == 404){
+            window.alert("Please sign in to reserve seats");
+          }
+          else{
+            window.location.replace("/itinerary");
+          }
+        }))
+        .catch((error) => {
+          console.error('Error:', error);
+        });
       }
     </script>
     <script type="module" src="/public/components/Footer.js"></script>

@@ -21,6 +21,7 @@ app.use(express.urlencoded());
 
 //cookie parser middleware
 var cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 //SAMPLE CODE FROM NODE POSTGRES THING
 const { Client } = require('pg');
@@ -34,7 +35,7 @@ function createSeat(x, y, available=true){
   return {
     pk: 0,
     new: true,
-    seat: true,
+    isseat: true,
     x: x,
     y: y,
     width: 20,
@@ -47,7 +48,7 @@ function createBuildingPiece(x, y, width, height){
   return {
     pk: 0,
     new: true,
-    seat: false,
+    isseat: false,
     x: x,
     y: y,
     width: width,
@@ -55,22 +56,84 @@ function createBuildingPiece(x, y, width, height){
   }
 }
 
-var data = [
+var theater = [
+  createBuildingPiece(10, 10, 280, 20),
   createSeat(10, 50),
-    createSeat(50, 50),
-    createSeat(90, 50),
-    createSeat(10, 200),
-    createSeat(50, 200),
-    createSeat(90, 200)
+  createSeat(50, 50),
+  createSeat(90, 50)
+];
+
+var diningRoom1 = [
+  createSeat(10, 50),
+  createSeat(10, 90, true),
+  createSeat(10, 130),
+  createBuildingPiece(60, 20, 20, 180),
+  createSeat(100, 50),
+  createSeat(100, 90),
+  createSeat(100, 130),
+  createSeat(160, 200),
+  createSeat(160, 240),
+  createSeat(160, 280),
+  createBuildingPiece(210, 170, 20, 180),
+  createSeat(250, 200),
+  createSeat(250, 240),
+  createSeat(250, 280)
 ]
 
+var diningRoom2 =  [
+  createSeat(10, 50),
+  createSeat(10, 90),
+  createSeat(10, 130),
+  createBuildingPiece(60, 20, 20, 180),
+  createSeat(100, 50),
+  createSeat(100, 90),
+  createSeat(100, 130),
+];
+
+var vipRoom = [
+  createSeat(10, 50),
+  createSeat(50, 50),
+  createSeat(90, 50),
+  createSeat(10, 200),
+  createSeat(50, 200),
+  createSeat(90, 200)
+];
+
+
+
 /*
-querier.getRoomID("VIP Room", function(id){
+querier.getRoomID("Theater", function(id){
   querier.editObjectsInRoom(id, data, function(){
-    console.log("dining3");
+    console.log("dining4");
+  });
+});*/
+
+/*
+querier.clearFurniture(function(){
+  console.log("cleared");
+  querier.getRoomID("Theater", function(id){
+    querier.editObjectsInRoom(id, theater, function(){
+      console.log("dining4");
+    });
+  });
+  querier.getRoomID("VIP Room", function(id){
+    querier.editObjectsInRoom(id, vipRoom, function(){
+      console.log("diningVIP");
+    });
+  });
+  querier.getRoomID("Dining Room 2", function(id){
+    querier.editObjectsInRoom(id, diningRoom2, function(){
+      console.log("dining2");
+    });
+  });
+  querier.getRoomID("Dining Room 1", function(id){
+    querier.editObjectsInRoom(id, diningRoom1, function(){
+      console.log("dining1");
+    });
   });
 });
 */
+
 //sets an app.get for the given urlPath to the file at filepath
 //if filepath not given it defaults to the name of the url + .html in the pages folder
 function mapPath(urlPath, filepath=("/pages/" + urlPath + ".html")){
@@ -89,7 +152,9 @@ mapPath("/reserve");
 mapPath("/pixi", "/node_modules/pixi.js/dist/browser/pixi.js");
 mapPath("/createRoom", "/pages/roomCreator.html");
 mapPath("/login");
-
+mapPath("/itinerary");
+mapPath("/createEvent", "/pages/eventCreator.html");
+mapPath("/admin", "/pages/admin.html");
 
 //function to create a session key for a user who signed in successfully
 function createSessionKey(){
@@ -172,9 +237,7 @@ app.get("/gsignin/:token", function(req, res){
 }); // gsignin
 
 
-//handle request to get room data
-app.get("/getRoomData", function(req, res){
-  //console.log("Get some room data")
+app.get("/getRoomData", function(req,res){
   querier.getRooms(function(rows){
     var names = [];
     for (row of rows){
@@ -193,12 +256,128 @@ app.get("/getRoomData", function(req, res){
             else{
               resolve(rows);
             }
+          });       
+        });
+      });
+      promises.push(p);
+    }
+
+    Promise.all(promises).then((out) => {
+      //console.log("40,000 years of human evolution, and we've barely even tapped the vastness of human potential");
+      //console.log(out);
+      var final_res = [];
+      for (var i = 0; i < names.length; i++){
+        final_res.push({
+          [names[i]]: out[i]
+        });
+      }
+      //console.log("CHECK THIS: " +  final_res);
+      res.json(final_res);
+    }).catch((reject) => {
+      //console.log("oOps");
+      console.log(reject);
+    });
+  });
+});
+
+app.get("/getRoomData", function(req,res){
+  querier.getRooms(function(rows){
+    var names = [];
+    for (row of rows){
+      names.push(row.name);
+    }
+    //console.log(names);
+    var promises = [];
+    for (n of names){
+      var p = new Promise((resolve, reject) => {
+        querier.getRoomID(n, function(id){
+          querier.getSeats(id, function(rows){
+            //console.log(rows);
+            if (rows.length < 0){
+              reject(rows);
+            }
+            else{
+              resolve(rows);
+            }
+          });       
+        });
+      });
+      promises.push(p);
+    }
+
+    Promise.all(promises).then((out) => {
+      //console.log("40,000 years of human evolution, and we've barely even tapped the vastness of human potential");
+      //console.log(out);
+      var final_res = [];
+      for (var i = 0; i < names.length; i++){
+        final_res.push({
+          [names[i]]: out[i]
+        });
+      }
+      //console.log("CHECK THIS: " +  final_res);
+      res.json(final_res);
+    }).catch((reject) => {
+      //console.log("oOps");
+      console.log(reject);
+    });
+  });
+});
+
+
+//handle request from users to get room data
+app.get("/getRoomData/:date/:time", function(req, res){
+
+  //parse the date and time
+  var raw_date = req.params.date;
+  var raw_time = req.params.time;
+  var dtObject = {
+    "time": raw_date + " " + (12 + parseInt(raw_time)),
+    "format": "YYYY-MM-DD HH24"
+  };
+
+  querier.getRooms(function(rows){
+    var names = [];
+    for (row of rows){
+      names.push(row.name);
+    }
+    //console.log(names);
+    var promises = [];
+    for (n of names){
+      var p = new Promise((resolve, reject) => {
+        querier.getRoomID(n, function(id){
+          var toSendBack = [];
+          querier.getUnavailableSeats(id, dtObject, function(rows){
+            //console.log("*************Godspeed**************");
+            //console.log(rows);
+            for (row of rows){
+              var newOne = row;
+              newOne.available = false;
+              toSendBack.push(newOne);
+            }
+            querier.getAvailableSeats(id, dtObject, function(more_rows){
+              //console.log("DO YOU KNOW HOW MUCH I SACRIFICED!");
+              //console.log(more_rows);
+              //console.log(rows);
+              if (toSendBack.length < 0){
+                reject(more_rows);
+              }
+              else{
+                for (r of more_rows){
+                  more_rows["available"] = true;
+                  toSendBack.push(r);
+                }
+                resolve(toSendBack);
+              }
+            });
+
           });
         });
       });
       promises.push(p);
     }
     Promise.all(promises).then((out) => {
+      //console.log("40,000 years of human evolution, and we've barely even tapped the vastness of human potential");
+      //console.log(out);
       var final_res = [];
       for (var i = 0; i < names.length; i++){
         final_res.push({
@@ -214,6 +393,82 @@ app.get("/getRoomData", function(req, res){
   });
   
 });
+
+app.post("/reserveEvent", function(req, res){
+  var name = req.cookies.id;
+  if (name != undefined){
+    var reservations = [];
+    var tickets = req.body.tickets;
+    var event = req.body.eventID;
+    var dtObject = {
+      "time": req.body.date + " " + (12 + parseInt(req.body.time)),
+      "format": "YYYY-MM-DD HH24"
+    };
+    for (var u = 0; u < tickets; u++){
+      reservations.push({
+        eventID: event,
+        userID: name,
+        date: dtObject.time,
+        formatting: dtObject.format,
+        seat: 'false'
+      })
+    }
+  }
+  else{
+    res.json({"code": 404});
+  }
+});
+
+app.post("/createNewEvent", function(req, res){
+  var form = new formidable.IncomingForm();
+  form.parse(req, function(err, fields, files){
+    if (err){
+      console.log(err);
+    }
+    var oldpath = files.image.filepath;
+    var newpath = "./public/images/" + files.image.originalFilename;
+    var fs = require("fs");
+    fs.rename(oldpath, newpath, function (err) {
+      if (err) throw err;
+    });
+    querier.createEvent(fields.name, fields.description, newpath, fields.capacity, function(x){
+      res.html("<p>Event created successfully.</p><p><a href='/'>Back to admin hub</a>");
+      res.end();
+    });
+  });
+});
+
+app.post("/reserveSeats", function(req, res){
+  var reservations = [];
+  var name = req.cookies.id;
+  console.log("NAME", name);
+  if (name != undefined){
+    var dtObject = {
+      "time": req.body.date + " " + (12 + parseInt(req.body.time)),
+      "format": "YYYY-MM-DD HH24"
+    };
+    for (pk of req.body.seats){
+      reservations.push({
+        seatID: pk,
+        userID: name,
+        date: dtObject.time,
+        formatting: dtObject.format,
+        seat: 'true'
+      });
+    }
+    console.log(reservations);
+    querier.addReservations(reservations, function(){
+      console.log("Let's go!!!");
+      res.json({"code": 200});
+    });
+  }
+  else{
+    console.log("FAILED");
+    res.json({"code": 404});
+  }
+  
+});
+
 
 // Submits new room data to database
 app.post("/editRoomData", function(req, res){
@@ -234,18 +489,81 @@ app.post("/editRoomData", function(req, res){
 
 // Gets itinerary of user
 app.get("/getReservations", (req, res) => {
-  querier.getReservations(req.cookies['pk'], (results) => {
+  querier.getReservations(req.cookies.id, (results) => {
+    // Constructs a very ugly dictionary with the results
     var dict = {};
+    console.log(results);
     for(result of results) {
+      console.log("isSeat: " + result.isSeat);
+      console.log("isseat: " + result.isseat);
+      // Checks if timestamp is in dict
       if(result.timestamp in dict) {
-        dict[result.timestamp]++;
+        // Checks if 
+        let isseat = result.isseat;
+        if(isseat in dict[result.timestamp]) {
+          if(!result.isseat) {
+            dict[result.timestamp][isseat].tickets++;
+          } else {
+            dict[result.timestamp][isseat].tickets++;
+          }
+        } else {
+          if(!isseat) {
+            dict[result.timestamp][isseat] = {
+              event: result.event,
+              tickets: 1
+            }
+          } else {
+            dict[result.timestamp][isseat] = {
+              tickets: 1
+            }
+          }
+        }
       } else {
-        dict[result.timestamp] = 1;
+        dict[result.timestamp] = {}
+        if(!result.isseat) {
+          dict[result.timestamp][result.isseat] = {
+            event: result.event,
+            tickets: 1
+          }
+        } else {
+          dict[result.timestamp][result.isseat] = {
+            tickets: 1
+          }
+        }
       }
     }
     res.json(dict);
   });
 }); // getReservations
+
+// Deletes reservations of user at a certain timestamp
+app.post("/deleteReservations", (req, res) => {
+  const date = req.body.date;
+  const hour = req.body.hour;
+  const timestamp = date + " " + hour;
+  console.log("TIMESTAMP: " + timestamp);
+  const formatting = "YYYY-MM-DD HH24";
+  const event = req.body.event;
+  const isseat = req.body.isseat;
+  const id = req.cookies.id;
+  if(isseat) {
+    querier.deleteSeatReservations({
+      userID: id,
+      isseat: isseat,
+      timestamp: timestamp,
+      formatting: formatting
+    });
+  } else {
+    querier.deleteEventReservation({
+      userID: id,
+      isseat: isseat,
+      event: event,
+      timestamp: timestamp,
+      formatting: formatting
+    });
+  }
+  
+});
 
 //listen on the port dictated by the .env file
 app.listen(process.env.PORT_NUM, function(){
