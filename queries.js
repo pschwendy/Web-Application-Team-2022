@@ -35,7 +35,7 @@ class queries {
     // Connects pool to DB
     constructor() {
         this.pool = new Pool(connectionString);
-        this.pool.connect();
+        this.pool.connect().catch(e => { throw(e); });
     } // constructor()
 
     deleteReservation(reservation_data) {
@@ -312,6 +312,16 @@ class queries {
                 console.log(err);
             }
             callback(res);
+        });
+    }
+
+    //gets all events from the events table
+    getEvents(callback){
+        this.pool.query("SELECT * FROM events", (err, res) => {
+            if (err){
+                console.log("FAILED TO GET EVENTS");
+            }
+            callback(res.rows);
         });
     }
 

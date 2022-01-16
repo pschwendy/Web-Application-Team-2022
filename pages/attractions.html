@@ -37,16 +37,16 @@
 
         <div class="container" style="width: 80%; margin: auto;">
             <div class="row">
-                <div class="col-md gy-5">
-                    <attraction-card link="/checkout?item=Rick's Roll" title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
+                <div id="gutter-1" class="col-md gy-5">
+                    <!--<attraction-card link="/checkout?item=Rick's Roll" title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
                     description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA RUN AROUND, AND DESERT YOU.">
                     </attraction-card>
                     <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
                     description="Sus. SUS. SUS!!! I knew it was Red.">
-                    </attraction-card>
+                    </attraction-card>-->
                 </div>
-                <div class="col gy-5">
-                    <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
+                <div id="gutter-2" class="col gy-5">
+                    <!--<attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
                     description="Sus. SUS. SUS!!! I knew it was Red.">
                     </attraction-card>
                     <attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
@@ -54,10 +54,10 @@
                     </attraction-card>
                     <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
                     description="Sus. SUS. SUS!!! I knew it was Red.">
-                    </attraction-card>
+                    </attraction-card>-->
                 </div>
-                <div class="col gy-5">
-                    <attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
+                <div id="gutter-3" class="col gy-5">
+                    <!--<attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
                     description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA RUN AROUND, AND DESERT YOU.">
                 </attraction-card>
                 <attraction-card title="SU GNOMA" alt="SU GNOMA" img="/public/images/amog-us.jpg"
@@ -65,11 +65,54 @@
                     </attraction-card>
                     <attraction-card title="Rick's Roll" alt="Rick Astley himself" img="/public/images/rick.png"
                     description="NEVER GONNA GIVE YOU UP, NEVER GONNA LET YOU DOWN, NEVER GONNA RUN AROUND, AND DESERT YOU.">
-                </attraction-card>
+                </attraction-card>-->
                 </div>
             </div>
             
         </div>
+
+        <script>
+
+            function createEvent(name, desc, image, pk){
+                console.log(image);
+                image = image.replace(".", "");
+                return `
+                    <attraction-card title="${name}" alt="${name}" img="${image}"
+                    description="${desc}" link="/checkout?item=${name}&pk=${pk}">
+                    </attraction-card>
+                `;
+            }   
+
+            window.onload = function(){
+                document.getElementById("gutter-1").innerHTML = "";
+                document.getElementById("gutter-2").innerHTML = "";
+                document.getElementById("gutter-3").innerHTML = "";
+                fetch("/getEventData").then((dataX) => {
+
+                    dataX.json().then((data) => {
+                        var spinner = 1;
+                        console.log("WOW", data);
+                        for (event of data){
+                            document.getElementById("gutter-" + spinner).innerHTML += createEvent(event.name, event.description, event.image, event.pk);
+                            spinner++;
+                            if (spinner > 3){
+                                spinner = 1;
+                            }
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                    
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }
+
+        </script>
+
+        <br>
+        <br>
+
         <script type="module" src="/public/components/Footer.js"></script>
         <footer>
             <p-footer></p-footer>

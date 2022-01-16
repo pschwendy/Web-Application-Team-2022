@@ -399,7 +399,7 @@ app.post("/reserveEvent", function(req, res){
   if (name != undefined){
     var reservations = [];
     var tickets = req.body.tickets;
-    var event = req.body.eventID;
+    var event = req.body.pk;
     var dtObject = {
       "time": req.body.date + " " + (12 + parseInt(req.body.time)),
       "format": "YYYY-MM-DD HH24"
@@ -413,6 +413,10 @@ app.post("/reserveEvent", function(req, res){
         seat: 'false'
       })
     }
+    querier.addNonSeatReservations(reservations, function(x){
+      console.log(x);
+      res.redirect("/itinerary");
+    });
   }
   else{
     res.json({"code": 404});
@@ -432,7 +436,7 @@ app.post("/createNewEvent", function(req, res){
       if (err) throw err;
     });
     querier.createEvent(fields.name, fields.description, newpath, fields.capacity, function(x){
-      res.html("<p>Event created successfully.</p><p><a href='/'>Back to admin hub</a>");
+      res.send("<p>Event created successfully.</p><p><a href='/'>Back to admin hub</a>");
       res.end();
     });
   });
@@ -563,6 +567,13 @@ app.post("/deleteReservations", (req, res) => {
     });
   }
   
+});
+
+//respond to requests to get event data
+app.get("/getEventData", function(req, res){
+  querier.getEvents(function(results){
+    res.json(results);
+  });
 });
 
 //listen on the port dictated by the .env file
