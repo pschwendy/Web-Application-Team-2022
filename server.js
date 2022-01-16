@@ -576,7 +576,8 @@ app.get("/getEventData", function(req, res){
   });
 });
 
+const port = process.env.PORT || 2022;
 //listen on the port dictated by the .env file
-app.listen(process.env.PORT_NUM, function(){
+app.listen(port, function(){
     console.log("Listening on port: " + process.env.PORT_NUM);
 });

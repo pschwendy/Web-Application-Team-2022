@@ -263,6 +263,7 @@ class queries {
                         if (err){
                             reject("errored out");
                         }
+                        console.log(results);
                         if (results.rows[0]["capacity"] < rows.rows.length){
                             reject("Overfilled");
                         }
