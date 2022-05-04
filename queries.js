@@ -14,8 +14,8 @@ let connectionString = {
 */
 
 let connectionString = {
-    user: 'cqjqsknuxsdrvv',
-    password: '80580c98812275ba39731836b84bbb932507c568b79d7875afe6d22bc9accea9',
+    user: 'event',
+    password: 'supersecretpassword',
     port: 5432,
 };
 
