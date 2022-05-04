@@ -7,15 +7,14 @@ const env = process.env.NODE_ENV || 'development';
 
 /*
 let connectionString = {
-    user: 'postgres',
-    password: 'postgres1245',
-    port: 5433,
-};
-*/
-
-let connectionString = {
     user: 'event',
     password: 'supersecretpassword',
+    port: 5432,
+};*/
+
+let connectionString = {
+    user: process.env.USER,
+    password: process.env.PASSWORD,
     port: 5432,
 };
 
