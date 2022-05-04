@@ -15,6 +15,7 @@ let connectionString = {
 let connectionString = {
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
+    host:'127.0.0.1'
     port: 5432,
 };
 
@@ -35,12 +36,12 @@ class queries {
     constructor() {
         console.log(process.env.DATABASE_URL);
         console.log(process.env.NODE_ENV);
-        // this.pool = new Pool(connectionString);
-        /*this.pool.connect().catch(e => { 
+        this.pool = new Pool(connectionString);
+        this.pool.connect().catch(e => { 
             console.log("-------COULDN'T CONNECT TO DATABASE!-------");
             throw(e); 
         });
-        console.log("-------CONNECTED-------");*/
+        console.log("-------CONNECTED-------");
     } // constructor()
 
     deleteReservation(reservation_data) {
