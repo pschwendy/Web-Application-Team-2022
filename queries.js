@@ -102,7 +102,6 @@ class queries {
             text: "SELECT * FROM users WHERE email=$1",
             values: [email]
         };
-        console.log("HELLO");
         return this.pool.query(select)
         .then(rows => {
             console.log("IN HERE");
