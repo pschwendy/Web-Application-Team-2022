@@ -5,16 +5,10 @@ const e = require('express');
 // await pool.connect()
 const env = process.env.NODE_ENV || 'development';
 
-/*
+
 let connectionString = {
     user: 'event',
     password: 'supersecretpassword',
-    port: 5432,
-};*/
-
-let connectionString = {
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
     port: 5432,
 };
 
