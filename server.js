@@ -565,8 +565,6 @@ app.get("/getReservations", (req, res) => {
     var dict = {};
     console.log(results);
     for(result of results) {
-      console.log("isSeat: " + result.isSeat);
-      console.log("isseat: " + result.isseat);
       // Checks if timestamp is in dict
       if(result.timestamp in dict) {
         // Checks if 

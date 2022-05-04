@@ -58,9 +58,9 @@ class Itinerary {
                 console.log(timestamp);
                 var date = new Date(timestamp);
                 console.log();
-                let h = date.getHours();
+                let h = date.getUTCHours();
                 this.table[j].hour = h;
-                let m = date.getMinutes();
+                let m = date.getUTCMinutes();
                 let append = "";
                 if(h > 12) {
                     h-= 12;

@@ -35,7 +35,10 @@ class queries {
     // Connects pool to DB
     constructor() {
         this.pool = new Pool(connectionString);
-        this.pool.connect().catch(e => { throw(e); });
+        this.pool.connect().catch(e => { 
+            console.log("-------COULDN'T CONNECT TO DATABASE!-------");
+            throw(e); 
+        });
     } // constructor()
 
     deleteReservation(reservation_data) {
