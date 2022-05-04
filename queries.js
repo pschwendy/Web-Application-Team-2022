@@ -26,7 +26,7 @@ if (env === 'development') {
 } else {
     connectionString = {
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
+        ssl: { rejectUnauthorized: true }
     };
 };
 
