@@ -40,6 +40,7 @@ class queries {
             console.log("-------COULDN'T CONNECT TO DATABASE!-------");
             throw(e); 
         });
+        console.log("-------CONNECTED-------");
     } // constructor()
 
     deleteReservation(reservation_data) {
