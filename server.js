@@ -101,7 +101,7 @@ var vipRoom = [
 ];
 
 
-
+// HI!
 /*
 querier.getRoomID("Theater", function(id){
   querier.editObjectsInRoom(id, data, function(){

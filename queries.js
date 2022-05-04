@@ -19,14 +19,14 @@ let connectionString = {
     port: 5432,
 };
 
-
+// Random comment to redeploy
 // checking to know the environment and suitable connection string to use
 if (env === 'development') {
     connectionString.database = 'eventdb';
 } else {
     connectionString = {
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: true }
+        ssl: { rejectUnauthorized: false }
     };
 };
 
