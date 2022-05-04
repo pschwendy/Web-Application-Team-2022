@@ -35,7 +35,7 @@ class queries {
     constructor() {
         console.log(process.env.DATABASE_URL);
         console.log(process.env.NODE_ENV);
-        this.pool = new Pool(connectionString);
+        // this.pool = new Pool(connectionString);
         /*this.pool.connect().catch(e => { 
             console.log("-------COULDN'T CONNECT TO DATABASE!-------");
             throw(e); 
