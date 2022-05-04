@@ -34,6 +34,7 @@ class queries {
     // Constructor
     // Connects pool to DB
     constructor() {
+        console.log("-------IN HERE-------");
         this.pool = new Pool(connectionString);
         this.pool.connect().catch(e => { 
             console.log("-------COULDN'T CONNECT TO DATABASE!-------");
