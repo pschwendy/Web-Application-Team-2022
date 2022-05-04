@@ -50,7 +50,7 @@ class queries {
             if(err) {
                 throw err;
             }
-            console.log("AYYY");
+            // console.log("AYYY");
         });
     }
 
