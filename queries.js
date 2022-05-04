@@ -13,8 +13,8 @@ let connectionString = {
 };*/
 
 let connectionString = {
-    user: process.env.USER,
-    password: process.env.PASSWORD,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
     port: 5432,
 };
 
